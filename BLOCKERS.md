@@ -194,3 +194,17 @@ opcode **2079** และลำดับ password/userid ไม่ได้ร�
 
 การเลื่อน device test B2 และยอมรับ offline B3 ไม่ยืนยัน ABI แทนหลักฐานนี้
 งาน B commit เป็นงานสำหรับ review; ยังไม่ยืนยัน end-to-end และยังไม่ไป Phase 5
+
+### B8 — คำตัดสินและผล follow-up (supersede OPEN ด้านบน)
+
+**สถานะ: RESOLVED สำหรับ implementation / verification deferred Phase 6**
+ผู้ใช้อนุมัติให้ใช้ native layout หากไม่พบ effective packing override
+ตรวจ build flags/global props และ common/PCH/include chain แล้วไม่พบ override
+ที่ครอบ struct เป้าหมาย (มี pragma ภายใน SDK/shared บางแห่งแต่ reset/pop หรืออยู่ภายหลัง)
+รายละเอียดหลักฐาน/ข้อจำกัดใน `PROTOCOL_FIX_REPORT.md` §6
+
+ใช้ login **56B** / heartbeat **24B**, opcode **2079** ไม่เปลี่ยน
+นี่คือ **best evidence จาก static analysis ของซอร์ส ยังไม่ยืนยันด้วย live packet capture**
+Phase 6 (B2 device/server test) ต้องยืนยัน sizeof ของ target และ wire capture,
+field offsets, heartbeat/key sizes และ rolling TEA ≥2 รอบก่อน claim live compatibility
+ไม่ต้องรอ blocker นี้เพื่อปิดงาน static ABI ตามคำอนุมัติ; ยังไม่เริ่ม Phase 5

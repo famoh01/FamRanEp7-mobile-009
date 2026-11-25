@@ -20,7 +20,7 @@ namespace RANMobile {
 //     uses THAI_NET_MSG_LOGIN, see LoginPage.cpp:228 -> ThaiSndLogin)
 //   - Heartbeat opcodes are ABSOLUTE enum values, not base-relative
 //     (s_NetGlobal.h:682-683): REQ = 160, ANS = 161
-//   - THAI_NET_LOGIN_DATA (s_NetGlobal.h:2260): 54 bytes, password BEFORE
+//   - THAI_NET_LOGIN_DATA (s_NetGlobal.h:2260): 56 bytes, password BEFORE
 //     userid, NO szRandomPassword / szEnCrypt fields
 //   - NET_MSG_GENERIC (s_NetGlobal.h:2050): 8 bytes { DWORD dwSize; EMNET_MSG nType }
 //   - USR_ID_LENGTH = 20, USR_PASS_LENGTH = 20 (s_NetGlobal.h:161-162)
@@ -56,13 +56,16 @@ struct EP7NetMsgGeneric {
     int32_t nType = 0;
 };
 
-// THAI_NET_LOGIN_DATA (s_NetGlobal.h:2260) — 54 bytes on the wire.
+// THAI_NET_LOGIN_DATA: inferred native PC ABI = 56 bytes.
+// Best static evidence; live capture confirmation deferred to Phase 6.
 // Field order matters: szPassword BEFORE szUserid.
-struct EP7ThaiNetLoginData {
+struct alignas(4) EP7ThaiNetLoginData {
     EP7NetMsgGeneric nmg;
     int32_t nChannel = 0;
     char szPassword[EP7_USR_PASS_LENGTH + 1]{};
     char szUserid[EP7_USR_ID_LENGTH + 1]{};
+    // Explicit native-PC tail padding; zeroed to avoid leaking memory on wire.
+    uint8_t tailPadding[2]{};
 
     EP7ThaiNetLoginData() {
         nmg.dwSize = static_cast<uint32_t>(sizeof(EP7ThaiNetLoginData));
@@ -75,3 +78,5 @@ struct EP7ThaiNetLoginData {
 #pragma pack(pop)
 
 } // namespace RANMobile
+
+static_assert(sizeof(RANMobile::EP7ThaiNetLoginData) == 56, "Native PC login ABI");

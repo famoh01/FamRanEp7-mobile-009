@@ -15,9 +15,9 @@ namespace RANMobile {
 //   m_Tea.encrypt(tnld.szUserid, 21);
 //   m_Tea.encrypt(tnld.szPassword, 21);
 //   return Send((char*)&tnld);
-// PC Send() transmits nmg.dwSize (54) raw struct bytes
+// PC Send() transmits nmg.dwSize (56) raw struct bytes
 // (netclientLib/s_NetClient.cpp:827-830). NetworkClient::SendPacket builds
-// the same wire bytes: header {dwSize=54, nType=2079} + 46-byte payload.
+// the same wire bytes: header {dwSize=56, nType=2079} + 48-byte payload.
 bool AuthenticationManager::Login(NetworkClient* net, const std::string& username, const std::string& password) {
     if (username.empty() || password.empty()) {
         Logger::Warn("AuthenticationManager", "Username or password is empty");
@@ -45,7 +45,7 @@ bool AuthenticationManager::Login(NetworkClient* net, const std::string& usernam
         return false;
     }
 
-    // Send exact EP7 THAI_NET_MSG_LOGIN payload (wire size 54, dwSize=54).
+    // Send exact EP7 THAI_NET_MSG_LOGIN payload (wire size 56, dwSize=56).
     const uint8_t* payload = reinterpret_cast<const uint8_t*>(&loginPkt) + sizeof(EP7NetMsgGeneric);
     uint32_t payloadSize = static_cast<uint32_t>(sizeof(EP7ThaiNetLoginData) - sizeof(EP7NetMsgGeneric));
 

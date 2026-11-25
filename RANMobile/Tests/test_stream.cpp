@@ -19,7 +19,7 @@ struct NativeHeartbeatAnswer { NativePCHeader nmg; char key[13]; };
 static_assert(sizeof(NativeHeartbeatAnswer) == 24, "PC heartbeat ABI");
 
 int main() {
-    const auto login = Frame(EP7_THAI_NET_MSG_LOGIN, 54);
+    const auto login = Frame(EP7_THAI_NET_MSG_LOGIN, 56);
     const auto req = Frame(160, 8);
     // Every possible two-fragment split, including splits inside dwSize/opcode.
     for (size_t split = 1; split < login.size(); ++split) {

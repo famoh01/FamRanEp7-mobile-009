@@ -1,11 +1,11 @@
 // Offline EP7 protocol test vectors (Phase 3.4).
 // No server, no assets, no device required — proves the mobile client
-// speaks the exact TH_PARAM wire protocol from the PC source.
+// matches the statically inferred TH_PARAM ABI (live capture pending).
 //
 // Ground truth (netclientLib/s_NetGlobal.h, netserverLib/minTea.cpp):
 //   NET_MSG_BASE (TH_PARAM) = 989, NET_MSG_LOBBY = BASE + 950 = 1939
 //   THAI_NET_MSG_LOGIN = LOBBY + 140 = 2079
-//   THAI_NET_LOGIN_DATA = 54 bytes {nmg(8), nChannel(4), szPassword[21], szUserid[21]}
+//   THAI_NET_LOGIN_DATA = 56 bytes {nmg(8), nChannel(4), szPassword[21], szUserid[21]}
 //   TEA key "Steven Seagal Neck Break" -> 16-byte key "Steven Seagal Ne"
 //   TEA vectors below were cross-checked against an independent Python
 //   transcription of minTea.cpp (see PROTOCOL_FIX_REPORT.md).
@@ -14,6 +14,7 @@
 #include "../Engine/Network/EP7Tea.h"
 
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -29,7 +30,16 @@ static_assert(RANMobile::EP7_NET_MSG_LOGIN_2 == 2046, "TW/HK login opcode (refer
 static_assert(RANMobile::EP7_NET_MSG_HEARTBEAT_CLIENT_REQ == 160, "Heartbeat REQ");
 static_assert(RANMobile::EP7_NET_MSG_HEARTBEAT_CLIENT_ANS == 161, "Heartbeat ANS");
 static_assert(sizeof(RANMobile::EP7NetMsgGeneric) == 8, "NET_MSG_GENERIC = 8 bytes");
-static_assert(sizeof(RANMobile::EP7ThaiNetLoginData) == 54, "THAI_NET_LOGIN_DATA = 54 bytes");
+static_assert(sizeof(RANMobile::EP7ThaiNetLoginData) == 56, "THAI_NET_LOGIN_DATA = 56 bytes");
+
+// Independent native layout mirror, without mobile packing directives.
+struct PCHeader { uint32_t size; int32_t type; };
+struct PCLogin { PCHeader header; int32_t channel; char password[21]; char userid[21]; };
+static_assert(sizeof(PCLogin) == 56);
+static_assert(offsetof(RANMobile::EP7ThaiNetLoginData, szPassword) == 12);
+static_assert(offsetof(RANMobile::EP7ThaiNetLoginData, szUserid) == 33);
+static_assert(offsetof(RANMobile::EP7ThaiNetLoginData, tailPadding) == 54);
+static_assert(alignof(RANMobile::EP7ThaiNetLoginData) == alignof(PCLogin));
 
 namespace {
 
@@ -85,7 +95,7 @@ int main() {
     //    (mirrors ThaiSndLogin -> ThaiMsgLogin).
     {
         RANMobile::EP7ThaiNetLoginData pkt;
-        assert(pkt.nmg.dwSize == 54);
+        assert(pkt.nmg.dwSize == 56);
         assert(pkt.nmg.nType == RANMobile::EP7_THAI_NET_MSG_LOGIN);
         assert(pkt.nChannel == 0);
 
@@ -99,25 +109,29 @@ int main() {
         assert(tea.encrypt(pkt.szPassword, 21));
 
         // Wire framing: NetworkClient::SendPacket emits
-        // {dwSize=54, nType=2079} + 46-byte payload == raw 54-byte struct.
-        uint8_t wire[54];
-        std::memcpy(wire, &pkt, 54);
+        // {dwSize=56, nType=2079} + 48-byte payload == raw 56-byte struct.
+        uint8_t wire[56];
+        std::memcpy(wire, &pkt, 56);
         uint32_t wireSize;
         int32_t wireType;
         std::memcpy(&wireSize, wire, 4);
         std::memcpy(&wireType, wire + 4, 4);
-        assert(wireSize == 54);
+        assert(wireSize == 56);
         assert(wireType == 2079);
 
+        assert(wire[54] == 0 && wire[55] == 0);
+        // Tail bytes are outside BOTH 21B TEA fields; changing them must not
+        // affect decrypt or ciphertext block boundaries.
+        wire[54] = 0xa5; wire[55] = 0x5a;
         // Server side (ThaiMsgLogin): decrypt both fields.
         RANMobile::EP7ThaiNetLoginData srv{};
-        std::memcpy(&srv, wire, 54);
+        std::memcpy(&srv, wire, 56);
         RANMobile::EP7Tea serverTea;
         assert(serverTea.decrypt(srv.szUserid, 21));
         assert(serverTea.decrypt(srv.szPassword, 21));
         assert(std::string(srv.szUserid) == "hawaii01");
         assert(std::string(srv.szPassword) == "pass1234");
-        std::cout << "[PASS] Full THAI login packet roundtrip (54B, opcode 2079)\n";
+        std::cout << "[PASS] Full THAI login packet roundtrip (56B, opcode 2079)\n";
     }
 
     // 4. Field order: password BEFORE userid (THAI_NET_LOGIN_DATA layout).

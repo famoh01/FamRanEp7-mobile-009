@@ -118,7 +118,7 @@ int main() {
     static_assert(RANMobile::EP7_NET_MSG_LOBBY == 1939, "LOBBY = 989 + 950");
     static_assert(RANMobile::EP7_THAI_NET_MSG_LOGIN == 2079, "THAI login opcode (TH build path)");
     static_assert(RANMobile::EP7_NET_MSG_LOGIN_2 == 2046, "TW/HK login opcode (reference only)");
-    static_assert(sizeof(RANMobile::EP7ThaiNetLoginData) == 54, "THAI_NET_LOGIN_DATA = 54 bytes");
+    static_assert(sizeof(RANMobile::EP7ThaiNetLoginData) == 56, "THAI_NET_LOGIN_DATA = 56 bytes");
 
     // 10. RANMobileDataConverter (reports DATA NOT FOUND IN SOURCE when missing)
     auto convRes = RANMobile::RANMobileDataConverter::ConvertAsset("/nonexistent/crow.mnsf", "/tmp/out");

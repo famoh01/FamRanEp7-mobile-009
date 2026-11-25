@@ -38,7 +38,9 @@ bool EP7Tea::encrypt(char* szData, int nMaxLength) {
         --keyLen;
     }
 
-    std::vector<char> text(static_cast<size_t>(keyLen) + 1, 0);
+    // Reserve the complete padded block before writing zero padding.
+    const int paddedLength = keyLen < 8 ? 8 : ((keyLen + 3) & ~3);
+    std::vector<char> text(static_cast<size_t>(paddedLength) + 1, 0);
     std::memcpy(text.data(), szData, static_cast<size_t>(keyLen));
     int len = keyLen;
 

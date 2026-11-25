@@ -250,3 +250,98 @@ Android/device (B2 เลื่อน Phase 6, B3 ยอมรับ offline แ
 
 **สถานะสุดท้ายแทนข้อความสรุปก่อนหน้า:** implementation งาน B + offline tests
 เสร็จสำหรับ review; การยืนยัน wire ABI ถูกบล็อกที่ B8 — หยุดรอคำตัดสิน
+
+## 6. B8 follow-up — build/include audit และ ABI สุดท้าย (2026-11-25)
+
+> **ส่วนนี้ supersede ข้อความ login 54B และ B8 OPEN ในรายงานก่อนหน้า**
+> ข้อสรุป: **best evidence จาก static analysis ของซอร์ส ยังไม่ยืนยันด้วย live packet capture**
+> ใช้ login **56B**, heartbeat answer / encryption-key message **24B** ตามคำอนุมัติ
+> opcode login **2079** ไม่เปลี่ยน; Phase 6 ต้องตรวจยืนยันกับ PC/server target อีกครั้ง
+
+### 6.1 ตรวจ build configuration เพิ่ม
+
+ซอร์สที่ตรวจ: `famoh01/ran-online-ep7` commit
+`47f3c6d6bf6e00f62efdb34f313eb7a4311bb26f`
+
+- ตรวจ `Smtm.sln`, `Smtm2022.sln`, `netclientLib/netclientLib.vcproj/.vcxproj`,
+  `netserverLib/netserverLib.vcproj/.vcxproj` และค้นทุก `.props/.targets/.sln/.vcproj/.vcxproj`
+  ใน checkout: **ไม่พบ `/Zp` หรือ `StructMemberAlignment` override**
+- `Directory.Build.props` (global) มี AdditionalOptions `/Zc:forScope-` เท่านั้น
+  ไม่ใช่ packing flag; ไม่พบ Directory.Build.targets เพิ่ม
+- vcxproj import Microsoft.Cpp.Default.props / Microsoft.Cpp.props / Microsoft.Cpp.targets;
+  vcproj เก่าระบุ `$(VCInstallDir)VCProjectDefaults/UpgradeFromVC71.vsprops`
+  ซึ่งเป็น toolchain ภายนอก ไม่ได้อยู่ใน checkout จึงไม่ได้อ้างว่าได้รัน MSBuild evaluate
+  ทุก property บนเครื่อง PC จริง หรือเห็น environment `CL` ของผู้ใช้
+
+### 6.2 ตรวจ shared/common header และ include order
+
+ตรวจเส้นทางก่อนประกาศ struct ไม่ใช่เพียงค้น pragma ใน s_NetGlobal.h:
+
+- Client TU: `s_NetClientMsgLogin.cpp` / `s_NetClientMsg.cpp` → `stdafx.h`
+  (PCH) → `dxstdafx.h`; จากนั้น `s_NetClient.h` → `s_NetGlobal.h` เป็น include แรก
+- Agent TU: `s_CAgentServerMsgLogin.cpp` → `stdafx.h` → `dxstdafx.h`;
+  `s_CAgentServer.h` → `s_CServer.h` → `s_NetGlobal.h` เป็น include แรก
+- ภายใน s_NetGlobal: winsock2/atltime/Mmsystem, minLzo/minUuid,
+  `GLDefine.h` → `Common/seqrandom.h`, ggsrv → nProtect,
+  gamecode → des/dhkey, strsafe ก่อนประกาศ NET_MSG_GENERIC และ login/heartbeat
+- เดิน include graph แบบ conservative (ทุก branch และทุก basename candidate ใน repo)
+  2,667 headers เพื่อไม่พลาด shared header: **พบ pragma จริง แต่ไม่พบ override
+  ที่ครอบ struct เป้าหมายค้างอยู่** ไม่ได้สรุปผิดว่าไม่มี pragma pack ทั้ง repo
+- SDK `d3d9types.h:27/1846`, `d3d9caps.h:21/472` ใช้ pack(4) แล้ว pack();
+  `d3dx9mesh.h:2759/2767` push(1)/pop; `LegacyInclude/stdarg.h:32/147` push(8)/pop
+- GLContrl* มี pack(1)/pack() ของ message อื่น แต่ถูก include ภายหลัง
+  s_NetGlobal ในเส้นทางเป้าหมาย ไม่เปลี่ยน struct ที่ประกาศไปแล้ว
+- ข้อจำกัด: 121 include names ใน conservative graph อยู่นอก checkout/resolve ไม่ได้
+  (รวม Windows/MFC/toolchain); นี่เป็น static evidence ไม่ใช่การ preprocess ด้วย
+  Windows SDK/MSVC target จริง จึงคง Phase 6 verification ไว้
+
+### 6.3 Layout และ TEA block boundaries
+
+```
+offset  0.. 7: header (dwSize=56, nType=2079)
+offset  8..11: nChannel
+offset 12..32: szPassword[21]
+offset 33..53: szUserid[21]
+offset 54..55: native tail padding (mobile ส่งศูนย์)
+```
+
+Mobile ใช้ `alignas(4)` และ explicit tailPadding[2] ที่ initialize เป็นศูนย์
+ภายใน wire struct เดิม เพื่อเลี่ยงการส่ง implicit/uninitialized padding
+asserts ตรวจขนาด 56, alignment 4 และ offsets 12/33/54 เทียบ native mirror
+AuthenticationManager ส่ง payload `sizeof(login)-8` = **48B** โดยอัตโนมัติ;
+MobileServerHost ใช้ sizeof เช่นกัน ไม่ต้องแก้ auth logic
+
+**TEA ไม่ได้เข้ารหัสทั้ง struct**: PC เรียก encrypt(password,21) และ
+ encrypt(userid,21) แยกกัน จึงไม่ต้องเพิ่ม TEA block ให้ครบ 56B
+แต่ละ field trim trailing NUL และ pad ภายใน scratch ให้เป็น multiple of 4
+(minimum 8); input ยาว 20 ตัว ⇒ encrypted 20 ไบต์ + NUL ภายใน field 21B
+native tail 2B อยู่นอกทั้งสอง calls: **ciphertext ทั้ง 5 vectors ไม่เปลี่ยน**
+เพิ่ม test เปลี่ยน tail bytes เป็น a5/5a แล้วยัง decrypt fields ได้เหมือนเดิม
+และ assert wire tail ปกติเป็นศูนย์ก่อนเปลี่ยน
+
+ขณะตรวจ scratch TEA พบ encrypt เดิม allocate เพียง keyLen+1 แต่เขียน padding
+ได้ถึง 8/next multiple-of-4 จึงขยาย allocation ให้ครบ padded block ก่อนเขียน
+แก้เฉพาะ memory safety ของ TEA ไม่เปลี่ยน algorithm/key/vector
+
+### 6.4 ผลตรวจซ้ำบน final sources
+
+- Full host compile **ผ่าน** `-std=c++17 -Wall -Wextra -Werror`
+  (เว้น Android bridge/CLI main และ protocol/stream test mains ที่ build แยก)
+- Protocol suite **ผ่าน**: key derivation, **5 TEA vectors เดิม**, roundtrip **56B**,
+  opcode 2079, layout/zero padding/tail independence, truncation
+- Stream suite **ผ่าน**: login **56B** ทุก split (55 จุด), fragmented header/body,
+  coalesced/trailing partial/reset, invalid sizes, max frame,
+  heartbeat **24B**, rolling key, Poll loopback response/no unsolicited timer/EOF
+- Protocol และ stream suites ทั้งคู่ build/run ใหม่ด้วย
+  `-fsanitize=address,undefined -fno-omit-frame-pointer`: **ผ่าน ไม่มี diagnostics**
+- ไม่รัน asset-dependent suite (B7) และไม่อ้าง live/device test (B2)
+
+### 6.5 Phase 6 verification gate
+
+ก่อนสรุป live compatibility ให้ตรวจ target sizeof และ capture ที่ไม่มี credential จริง:
+login dwSize=56/opcode2079; heartbeat request=8/answer=24; key message=24;
+ตรวจ field offsets และ server ยอมรับ reply อย่างน้อยสองรอบเพื่อยืนยัน rolling TEA
+หากต่างจาก static evidence ต้องแก้ ABI จากหลักฐานจริง ไม่เดารับหลาย layout
+
+**B8:** resolved สำหรับ implementation ตามคำอนุมัติ; verification deferred Phase 6
+งานนี้ commit แยกจาก A/B และหยุดรอคำสั่งก่อน Phase 5
