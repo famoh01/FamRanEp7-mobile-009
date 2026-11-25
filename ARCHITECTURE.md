@@ -1,7 +1,7 @@
 # ARCHITECTURE.md — RAN Online EP7 · PC → Mobile (Android) Full Port
 
 > **Phase 1 deliverable** (โครงสร้าง/สถาปัตยกรรมตามหลักฐานจากซอร์สจริง)
-> Repo งาน: `famoh01/FamRanEp7-mobile-009` · branch `arena/f23bb3f3-famranep7-mobile-009`
+> Repo งาน: `famoh01/FamRanEp7-mobile-009` · branch `arena/afe528ba-famranep7-mobile-009`
 > Upstream (ซอร์สจริง + งานเดิม): `famoh01/ran-online-ep7` (`main` @ `47f3c6d`)
 > วันที่ตรวจ: 2026-11-25 · ทุกตัวเลขในเอกสารนี้วัดจากไฟล์จริง ไม่ได้ประมาณ
 

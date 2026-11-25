@@ -1,6 +1,6 @@
 # BLOCKERS.md — RAN Online EP7 · PC → Mobile (Android)
 
-> อัปเดตล่าสุด: 2026-11-25 · branch `arena/f23bb3f3-famranep7-mobile-009`
+> อัปเดตล่าสุด: 2026-11-25 · branch `arena/afe528ba-famranep7-mobile-009`
 > **กฎ:** ถ้าเจอ blocker ต้องบันทึกที่นี่ + ระบุว่าต้องการอะไร + **หยุดรอคำสั่ง** (Master Command ข้อ 4)
 > สถานะ: `OPEN` = ต้องรอผู้ใช้ · `WORKAROUND` = มีทางเลี่ยงที่ทำได้เองแล้ว · `RESOLVED`
 

@@ -1,6 +1,6 @@
 # PROGRESS_REVIEW.md — ตรวจสอบงานเดิม (Phase 2)
 
-> Repo งาน: `famoh01/FamRanEp7-mobile-009` · branch `arena/f23bb3f3-famranep7-mobile-009`
+> Repo งาน: `famoh01/FamRanEp7-mobile-009` · branch `arena/afe528ba-famranep7-mobile-009`
 > ตรวจงานเดิมจาก: `famoh01/ran-online-ep7` — PR #1, PR #2 (ทั้งคู่ MERGED), branch `arena/6c988b52-ran-online-ep7`
 > วิธีตรวจ: clone ซอร์สจริง, **compile ด้วย g++ เอง**, รัน test, grep ground truth เทียบทีละ struct/opcode
 > ใช้คู่กับ `ARCHITECTURE.md` (Phase 1)
