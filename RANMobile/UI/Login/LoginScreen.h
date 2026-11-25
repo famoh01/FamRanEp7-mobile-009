@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "../UITheme.h"
 
 namespace RANMobile {
     class NetworkClient;
@@ -23,6 +24,9 @@ enum class LoginAuthState {
     ConnectionError
 };
 
+// Phase 5 handoff stub: no layout, rendering, hit testing or animation.
+// Existing API is retained so Engine/Android and legacy tests still compile.
+// Compatibility getters below are placeholders, not implemented UI features.
 class LoginScreen {
 public:
     void Initialize(RANMobile::NetworkClient* net);
@@ -79,7 +83,4 @@ private:
     std::string m_statusMessage = "DISCONNECTED";
     bool m_exitRequested = false;
 
-    float m_screenW = 1280.0f;
-    float m_screenH = 720.0f;
-    int m_activePointerId = -1;
 };

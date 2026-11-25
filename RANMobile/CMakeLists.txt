@@ -31,6 +31,12 @@ set(RANMOBILE_SOURCES
     Client/Quest/QuestManager.cpp
     Client/Map/MapManager.cpp
     Client/Chat/ChatManager.cpp
+    UI/UITheme.h
+    UI/Components/UIButton.h
+    UI/Components/UIButton.cpp
+    UI/Components/UIInputField.h
+    UI/Components/UIInputField.cpp
+    UI/Login/LoginScreen.h
     UI/Login/LoginScreen.cpp
     UI/Joystick/VirtualJoystick.cpp
     UI/Buttons/MobileButton.cpp
