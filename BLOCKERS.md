@@ -159,3 +159,38 @@ ranmobile_tests: RANMobile/Tests/test_main.cpp:186: int main(): Assertion `tpSta
 | Phase 6 — signed release | ⏸️ รอ **B5** (จัดการตอน Phase 6) |
 
 **Phase 3.4 เสร็จแล้ว — หยุดรอคำสั่งไป Phase ถัดไปตามกฎข้อ 4**
+
+
+## อัปเดตหลัง Phase 3.4 งาน B — 2026-11-25
+
+- **B2:** ผู้ใช้อนุมัติเลื่อนการทดสอบ device จริงไป Phase 6; งานนี้ตรวจ host/offline เท่านั้น
+- **B7:** ผู้ใช้อนุมัติ workaround แยก suite แต่ให้เลื่อนการปรับ suite เดิมไปภายหลัง;
+  ไม่แก้ `test_main` หรือ asset tests ในงาน B
+- Frame reassembly + heartbeat งาน B เสร็จแล้ว ดู `PROTOCOL_FIX_REPORT.md` §5
+- ยังไม่มี live EP7 interoperability/device test; offline tests ไม่ใช่หลักฐานว่า login จริงสำเร็จ
+- หยุดรอคำสั่งก่อน Phase 5 (Login UI); ไม่เริ่ม UI ในงานนี้
+
+## B8 — ต้องยืนยัน wire ABI/struct padding ของ PC build จริง
+
+**สถานะ: OPEN — หยุดรอคำตัดสินก่อนอ้างความเข้ากันได้กับ server จริง**
+
+ขณะตรวจ heartbeat งาน B พบว่า `s_NetGlobal.h` ใช้ native structs และส่ง
+`sizeof(struct)` ไม่ใช่ผลบวก field อย่างเดียว ไม่พบ pack(1) ใน header/ค่ากำหนด
+StructMemberAlignment ใน netclientLib project ที่ตรวจ Default 4-byte alignment ให้:
+- heartbeat answer / NET_ENCRYPT_KEY = **24B** (8+13+3 padding) — งาน B ใช้ค่านี้
+- THAI_NET_LOGIN_DATA = **56B** (8+4+21+21+2 padding) — ขัดกับ **54B** ที่งาน A
+  เคยรายงาน/ทดสอบและผู้ใช้รับทราบ (งาน B ยังไม่เปลี่ยน login struct)
+
+Offline assert ของงาน A ตรวจเพียง mobile packed struct ไม่ได้ยืนยัน ABI ของ PC
+จึงไม่ใช่หลักฐานว่า PC ส่ง 54B จริง ขอแก้ความมั่นใจของรายงานเดิมตรงนี้อย่างชัดแจ้ง
+opcode **2079** และลำดับ password/userid ไม่ได้รับผลกระทบ
+
+**ต้องการอย่างใดอย่างหนึ่ง:**
+1. ผล `sizeof(THAI_NET_LOGIN_DATA)`, `sizeof(NET_HEARTBEAT_CLIENT_ANS)`,
+   `sizeof(NET_ENCRYPT_KEY)` จาก PC/server build ที่จะใช้งาน หรือ packet capture
+   (ไม่ส่ง credential จริง), หรือ
+2. อนุมัติงานแก้ ABI แยกโดยยึด default native PC alignment (login 56B,
+   heartbeat/key 24B) พร้อมแก้ tests/รายงานงาน A; ไม่ใช้วิธีรับทั้งสองแบบโดยเดา
+
+การเลื่อน device test B2 และยอมรับ offline B3 ไม่ยืนยัน ABI แทนหลักฐานนี้
+งาน B commit เป็นงานสำหรับ review; ยังไม่ยืนยัน end-to-end และยังไม่ไป Phase 5

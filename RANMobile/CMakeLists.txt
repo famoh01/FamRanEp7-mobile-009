@@ -71,6 +71,8 @@ else()
     add_executable(ranmobile_tests Tests/test_main.cpp)
     target_link_libraries(ranmobile_tests PRIVATE ranmobile_core pthread)
     # Protocol test: no external assets required (offline test vectors).
+    add_executable(ranmobile_stream_tests Tests/test_stream.cpp)
+    target_link_libraries(ranmobile_stream_tests PRIVATE ranmobile_core pthread)
     add_executable(ranmobile_protocol_tests Tests/test_protocol.cpp)
     target_link_libraries(ranmobile_protocol_tests PRIVATE ranmobile_core pthread)
 endif()

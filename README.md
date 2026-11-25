@@ -43,6 +43,6 @@ RANMobile/        ← งาน mobile เดิม (import มาจาก upst
 ใน environment ที่ไม่มี NDK ยัง compile ฝั่ง Linux เพื่อรัน test ได้:
 
 ```bash
-g++ -std=c++17 -Wall -Wextra -Werror $(find RANMobile -name '*.cpp' ! -name 'native_bridge.cpp' ! -name 'dep_scan_cli.cpp' ! -name 'test_protocol.cpp') \
+g++ -std=c++17 -Wall -Wextra -Werror $(find RANMobile -name '*.cpp' ! -name 'native_bridge.cpp' ! -name 'dep_scan_cli.cpp' ! -name 'test_protocol.cpp' ! -name 'test_stream.cpp') \
     -lpthread -o ranmobile_tests
 ```

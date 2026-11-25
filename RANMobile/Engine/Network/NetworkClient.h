@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EP7Protocol.h"
+#include "EP7Stream.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -33,10 +34,14 @@ public:
 
 private:
     int m_socket = -1;
+    uint64_t m_generation = 0;
     ConnectionState m_state = ConnectionState::Disconnected;
     std::string m_host;
     uint16_t m_port = 0;
-    float m_heartbeatTimer = 0.0f;
+    EP7Stream m_stream;
+    EP7Heartbeat m_heartbeat;
+    std::vector<uint8_t> m_pendingSend;
+    bool FlushSend();
     std::function<void(int32_t, const uint8_t*, uint32_t)> m_onPacket;
 };
 

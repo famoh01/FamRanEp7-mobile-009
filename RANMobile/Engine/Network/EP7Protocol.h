@@ -45,6 +45,8 @@ constexpr int32_t EP7_NET_MSG_LOGIN_FB = EP7_NET_MSG_LOBBY + 108; // 2047
 constexpr int32_t EP7_THAI_NET_MSG_LOGIN = EP7_NET_MSG_LOBBY + 140; // 2079
 constexpr int32_t EP7_THAI_NET_MSG_LOGIN_FB = EP7_NET_MSG_LOBBY + 141; // 2080
 
+constexpr int32_t EP7_NET_MSG_SND_ENCRYPT_KEY = EP7_NET_MSG_LOBBY + 160; // 2099
+
 constexpr size_t EP7_USR_ID_LENGTH = 20;
 constexpr size_t EP7_USR_PASS_LENGTH = 20;
 

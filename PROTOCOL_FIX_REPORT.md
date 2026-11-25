@@ -132,3 +132,121 @@ framing ถูกต้องอยู่แล้วตาม `PROGRESS_REVIEW.
 - `NetworkClient::Poll` ยังไม่มี frame reassembly + heartbeat ตามรอบ server
   (งาน B ใน `PROGRESS_REVIEW.md` §6 — ทำต่อได้เลย ไม่ติด blocker)
 - `MobileServerHost` เป็น host ทดสอบภายใน ไม่ใช่ EP7 server จริง
+
+
+---
+
+## 5. Phase 3.4 งาน B — Frame reassembly + heartbeat (2026-11-25)
+
+งานนี้แยก commit จากงาน A (`6639c26`); opcode **2079** คงเดิมตามที่ผู้ใช้อนุมัติ
+ไม่แก้ gameplay/auth/UI logic และไม่เริ่ม Phase 5
+
+### 5.1 Ground truth: รอบจริงของ heartbeat
+
+อ้างอิง clone `famoh01/ran-online-ep7`:
+
+| ซอร์ส | พฤติกรรม active |
+|---|---|
+| `netserverLib/s_CServer.h:53-54` | `HEARTBEAT_TIME=120000`, `SESSION_CHECK_TIME=300000` ms |
+| `s_CLoginServer.cpp:615-675` | สลับส่ง REQ / ตรวจคำตอบทุก **>120 วินาที**; request-to-request ประมาณ **240 วินาที**, ตอบก่อนรอบตรวจถัดไป (~120 วินาที) |
+| `s_CAgentServer.cpp:1310-1448` | ใช้ **SESSION_CHECK_TIME=300000** ในเงื่อนไขจริง ไม่ใช้ค่า `dwUdpateTime` ที่ส่งเข้ามา; สลับส่ง/ตรวจทุก **>300 วินาที** ⇒ REQ ห่างกัน ~600 วินาที, หน้าต่างตอบ ~300 วินาที |
+| `s_CAgentServer.cpp:1377-1410` | ถ้า GameGuard init+auth เปิด ใช้ GameGuard auth แทน plain heartbeat; งานนี้ไม่ปลอม/ข้าม anti-cheat |
+| `netclientLib/s_NetClientMsg.cpp:83-85` | รับ opcode **160** แล้วเรียก `SndHeartbeat()` **ทันที** |
+| `s_NetClientMsg.cpp:280-305` | คำตอบ opcode **161**, header + `szEnCrypt[13]`; Login/Field เป็นศูนย์, Agent เข้ารหัส mutable key ทุกครั้ง |
+| `s_NetClientMsg.cpp:159-165` | `NET_MSG_SND_ENCRYPT_KEY` อัปเดต key เริ่มต้น (StringCchCopy จำกัด 12 ตัว + NUL) |
+| `s_CAgentServerMsg.cpp:37-56` | decrypt/เปรียบเทียบ key เดิม แล้วเก็บ ciphertext เป็น key รอบถัดไป + SetHeartBeat |
+
+**ผล:** ลบ timer ส่ง 161 ทุก 15 วินาทีของ mobile เดิม แทนด้วยตอบทันทีเมื่อ
+ได้รับ REQ ครบเฟรม ไม่เพิ่ม client-side idle timeout ที่ไม่มีใน PC client
+ค่า `deltaTime` ไม่ใช้กำหนด heartbeat อีกต่อไป ความถี่จึงขึ้นกับ server จริง
+
+Heartbeat answer ตาม native PC ABI: header 8 + CHAR[13] + tail padding 3 = **24 ไบต์**
+(ไม่ใช่ header-only 8 ไบต์แบบ mobile เดิม); padding ที่ mobile ส่งเป็นศูนย์เสมอ
+`NET_ENCRYPT_KEY` มี layout เดียวกัน opcode `1939+160=2099`
+ใช้ key message เป็นจุดเริ่ม Agent heartbeat path; reconnect/disconnect reset key
+Field connection ใหม่ไม่มี key จึงส่งศูนย์เหมือน PC Field path
+
+### 5.2 Reassembly และ transport
+
+- `EP7Stream.h` (ใหม่): อ่าน raw stream โดย `dwSize` รวม header 8 ไบต์
+  เก็บ partial header/body ข้าม `Poll`, แยกหลายเฟรมใน recv เดียว และเก็บ trailing partial
+- จำกัด frame **8..1024 ไบต์** ตาม `NET_DATA_BUFSIZE=1024`
+  (`s_NetGlobal.h:99`, `RcvMsgBuffer.cpp::getMsg`); malformed size ปิด connection
+  ไม่ scan หา header ใหม่โดยเดา เพราะจะเสีย framing
+- `NetworkClient::Poll`: drain recv จน EAGAIN/EWOULDBLOCK, retry EINTR,
+  EOF/fatal error ⇒ disconnect + ล้าง partial/key/send state
+- Callback รับ **หนึ่งเฟรมเต็ม** ต่อครั้ง ไม่ใช่จำนวนไบต์ที่ recv ได้
+  ข้อมูลชี้เข้า frame ใช้ได้ระหว่าง callback เท่านั้น
+- Callback disconnect/reconnect ⇒ หยุด process buffer ของ connection เก่าทันที
+  ใช้ generation counter ป้องกัน OS นำ socket fd เดิมกลับมาใช้
+- ส่ง reply ด้วย SendPacket; เก็บ unsent tail เมื่อ nonblocking send ได้บางส่วน/
+  EAGAIN แล้ว flush ต่อใน Poll เพื่อไม่ให้ heartbeat ขาดเฟรม; EINTR retry,
+  SIGPIPE ป้องกันด้วย MSG_NOSIGNAL บน Linux/Android
+- SendPacket คืน true หมายถึง accepted/queued ไม่รับประกัน delivery;
+  เช็ก payload size/null ก่อน enqueue; ไม่เปลี่ยน raw framing
+- ไม่มี LZO decompression/garbage-envelope เพิ่มในงานนี้: scope คือ raw-struct framing
+  เท่านั้น (PC มี NET_COMPRESS handler แยกต่างหาก); ไม่อ้างว่ารองรับทุก envelope แล้ว
+
+### 5.3 ไฟล์ที่เปลี่ยนในงาน B
+
+| ไฟล์ | เหตุผล |
+|---|---|
+| `Engine/Network/EP7Stream.h` | helper reassembly + request-driven heartbeat/key state ใช้ร่วมกับ tests |
+| `Engine/Network/NetworkClient.{h,cpp}` | Poll integration, lifecycle reset, partial send/error handling |
+| `Engine/Network/EP7Protocol.h` | เพิ่ม key-message opcode 2099; ไม่เปลี่ยนค่า login |
+| `Tests/test_stream.cpp` | offline vectors + loopback transport fixture (ไม่ใช้ EP7 server จริง) |
+| `CMakeLists.txt` | target แยก `ranmobile_stream_tests` |
+| `README.md` | คำสั่งรวม sources เว้น test main ใหม่ |
+| `BLOCKERS.md` | บันทึกการเลื่อน B2/B7 ตามคำสั่งล่าสุด |
+| `PROTOCOL_FIX_REPORT.md` | รายงานงาน B ส่วนนี้ |
+
+### 5.4 Tests และคำสั่งทำซ้ำ
+
+```bash
+g++ -std=c++17 -Wall -Wextra -Werror \
+  RANMobile/Tests/test_stream.cpp \
+  RANMobile/Engine/Network/NetworkClient.cpp \
+  RANMobile/Engine/Network/EP7Tea.cpp \
+  RANMobile/Engine/Core/Logger.cpp -o /tmp/stream_tests
+ timeout 15 /tmp/stream_tests
+```
+
+ผลจริง:
+- **PASS** ทุกจุด split ของเฟรม 54B (53 จุด), header/body ทีละไบต์
+- **PASS** หลายเฟรมติดกัน + trailing partial, reset เมื่อ reconnect, ขนาดสูงสุด 1024B
+- **PASS** reject dwSize = 0, 1, 7, 1025, 0xffffffff
+- **PASS** golden heartbeat Login/Field = 24B opcode 161 + zero payload/padding
+- **PASS** Agent key `hawaii01` ⇒ `d4d551e8047f5be3` (vector งาน A),
+  TEA key แบบ rolling ในรอบถัดไป, malformed heartbeat/key sizes, key reset
+- **PASS** เรียก Poll จริงด้วย offline loopback TCP fixture: partial header,
+  ไม่มี callback ก่อนเฟรมครบ, callback ได้ 8B พอดี, reply ทันที,
+  ไม่ส่ง unsolicited heartbeat แม้ deltaTime มาก, ปิดสถานะเมื่อ EOF
+- **PASS** suite เดียวกันภายใต้ AddressSanitizer + UndefinedBehaviorSanitizer
+- **PASS** full-source host compile `-Wall -Wextra -Werror`
+  (เว้น Android bridge, dep_scan_cli และ test mains แยก)
+- **PASS** protocol/TEA suite งาน A รันซ้ำ
+
+ข้อจำกัด: ไม่ force kernel short-send/EAGAIN ใน test fixture รอบนี้;
+code เก็บ unsent tail แต่ยังไม่มี deterministic fault-injection test สำหรับ branch นี้
+ไม่ได้รัน asset-dependent `test_main` ซ้ำตามคำสั่ง B7 และยังไม่ทดสอบ live EP7/
+Android/device (B2 เลื่อน Phase 6, B3 ยอมรับ offline แล้ว)
+
+**สถานะ:** งาน B เสร็จในขอบเขต raw framing + plain heartbeat; หยุดรอคำสั่ง
+ก่อน Phase 5 — Login UI
+
+### 5.5 ⚠️ ข้อค้นพบแก้ความมั่นใจของรายงานงาน A — B8 (OPEN)
+
+ระหว่างตรวจ native heartbeat ABI พบประเด็น padding ที่รายงานงาน A มองข้าม:
+ผลบวก fields ของ Thai login คือ 54 แต่ **default native ABI ให้ sizeof=56**
+เพราะ tail padding 2B ขณะที่งาน A ใช้ `#pragma pack(1)` ฝั่ง mobile
+ไม่พบหลักฐานยืนยันว่า PC/server target ใช้ pack(1) ดังนั้นคำกล่าวเดิมว่า
+54B ตรง PC 100% ยังยืนยันไม่ได้; test 54B ในงาน A ยืนยันเฉพาะ mobile layout
+ไม่ใช่การ compile sizeof จาก PC target
+
+งาน B ใช้ heartbeat/key 24B ตาม default native ABI และทดสอบสมมติฐานนี้ได้
+แต่ **ยังไม่ถือว่าพิสูจน์ interoperability จริง** ดู `BLOCKERS.md` B8 สำหรับ
+ผล sizeof/capture ที่ต้องการ หรือการอนุมัติแก้ ABI แยก (login 56B)
+ไม่ได้เปลี่ยน login 54B ของงาน A โดยพลการ และ opcode 2079 คงเดิม
+
+**สถานะสุดท้ายแทนข้อความสรุปก่อนหน้า:** implementation งาน B + offline tests
+เสร็จสำหรับ review; การยืนยัน wire ABI ถูกบล็อกที่ B8 — หยุดรอคำตัดสิน
