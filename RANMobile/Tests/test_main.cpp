@@ -110,9 +110,15 @@ int main() {
     skillBtn.Update(2.5f);
     assert(skillBtn.CanUse());
 
-    // 9. EP7Protocol verified constants
+    // 9. EP7Protocol ground truth (TH_PARAM — see Tests/test_protocol.cpp
+    //    for the full offline vector suite; these asserts are compile-time).
     static_assert(RANMobile::EP7_NET_MSG_HEARTBEAT_CLIENT_ANS == 161, "Verified EP7 Heartbeat ID");
-    static_assert(RANMobile::EP7_NET_MSG_LOGIN_2 == 1120, "Verified EP7 Login ID");
+    static_assert(RANMobile::EP7_NET_MSG_HEARTBEAT_CLIENT_REQ == 160, "Verified EP7 Heartbeat REQ ID");
+    static_assert(RANMobile::EP7_NET_MSG_BASE == 989, "TH_PARAM base must be 989");
+    static_assert(RANMobile::EP7_NET_MSG_LOBBY == 1939, "LOBBY = 989 + 950");
+    static_assert(RANMobile::EP7_THAI_NET_MSG_LOGIN == 2079, "THAI login opcode (TH build path)");
+    static_assert(RANMobile::EP7_NET_MSG_LOGIN_2 == 2046, "TW/HK login opcode (reference only)");
+    static_assert(sizeof(RANMobile::EP7ThaiNetLoginData) == 54, "THAI_NET_LOGIN_DATA = 54 bytes");
 
     // 10. RANMobileDataConverter (reports DATA NOT FOUND IN SOURCE when missing)
     auto convRes = RANMobile::RANMobileDataConverter::ConvertAsset("/nonexistent/crow.mnsf", "/tmp/out");

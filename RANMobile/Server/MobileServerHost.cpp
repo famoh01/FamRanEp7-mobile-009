@@ -1,6 +1,7 @@
 #include "MobileServerHost.h"
 #include "../Engine/Core/Logger.h"
 #include "../Engine/Network/EP7Protocol.h"
+#include "../Engine/Network/EP7Tea.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -109,9 +110,14 @@ void MobileServerHost::HandleClient(int clientFd) {
         if (hdr.nType == EP7_NET_MSG_HEARTBEAT_CLIENT_ANS) {
             EP7NetMsgGeneric ack{sizeof(EP7NetMsgGeneric), EP7_NET_MSG_HEARTBEAT_CLIENT_ANS};
             ::send(clientFd, &ack, sizeof(ack), 0);
-        } else if (hdr.nType == EP7_NET_MSG_LOGIN_2 && n >= static_cast<ssize_t>(sizeof(EP7NetLoginData))) {
-            EP7NetLoginData pkt{};
+        } else if (hdr.nType == EP7_THAI_NET_MSG_LOGIN && n >= static_cast<ssize_t>(sizeof(EP7ThaiNetLoginData))) {
+            // Mirror CAgentServer::ThaiMsgLogin (s_CAgentServerMsgLogin.cpp:13):
+            // TEA-decrypt both 21-byte fields, then authenticate.
+            EP7ThaiNetLoginData pkt{};
             std::memcpy(&pkt, buf, sizeof(pkt));
+            EP7Tea tea;
+            tea.decrypt(pkt.szUserid, static_cast<int>(EP7_USR_ID_LENGTH + 1));
+            tea.decrypt(pkt.szPassword, static_cast<int>(EP7_USR_PASS_LENGTH + 1));
             pkt.szUserid[EP7_USR_ID_LENGTH] = '\0';
             pkt.szPassword[EP7_USR_PASS_LENGTH] = '\0';
             bool ok = Authenticate(pkt.szUserid, pkt.szPassword);

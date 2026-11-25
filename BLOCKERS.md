@@ -10,7 +10,7 @@
 
 | | |
 |---|---|
-| **สถานะ** | 🔴 `OPEN` |
+| **สถานะ** | ✅ `RESOLVED` (ผู้ใช้ตัดสินใจ 2026-11-25: **ข้าม — ไม่ใช้ asset เก่า ทำ UI ใหม่แบบ procedural/vector ทั้งหมดใน Phase 5**) |
 | **กระทบ** | Phase 3.1 Rendering, 3.3 Asset pipeline, **Phase 5 UI (โลโก้/พื้นหลัง login)** |
 
 **สิ่งที่ขาด:** ไฟล์ asset จริงของ client ไทย
@@ -60,7 +60,7 @@ g++ ✔  cmake ✘  ninja ✘  java ✘  gradle ✘  adb ✘   ANDROID_HOME=unse
 
 | | |
 |---|---|
-| **สถานะ** | 🔴 `OPEN` |
+| **สถานะ** | ✅ `RESOLVED` (ผู้ใช้ตัดสินใจ 2026-11-25: **ยอมรับ offline protocol test vector แทน** — ดู `PROTOCOL_FIX_REPORT.md`) |
 | **กระทบ** | ยืนยันว่า login ผ่านจริง, ทดสอบ movement/combat, Phase 4 |
 
 **สิ่งที่ขาด:** `LoginServer` + `AgentServer` + `FieldServer` + `SessionServer` ที่รันบน Windows, MSSQL ที่ restore `RanUser`/`RanGame1`/`RanLog`/`RanShop`
@@ -78,7 +78,7 @@ g++ ✔  cmake ✘  ninja ✘  java ✘  gradle ✘  adb ✘   ANDROID_HOME=unse
 
 | | |
 |---|---|
-| **สถานะ** | 🔴 `OPEN` (ข้อมูลจาก repo ไม่ครบ — ไม่ใช่ความผิดของผู้ใช้) |
+| **สถานะ** | ✅ `RESOLVED` (ผู้ใช้ตัดสินใจ 2026-11-25: **ข้ามไปก่อน — Phase 4 ทำแค่ระดับ protocol/auth**) |
 | **กระทบ** | Phase 4 "SERVER (GM) COMPATIBILITY" |
 
 **ข้อเท็จจริง:** repo `famoh01/ran-online-ep7` **ไม่มี** โฟลเดอร์ `RanLogic/`, `RanLogicClient/`, `RanLogicServer/`
@@ -98,7 +98,7 @@ ls -d /tmp/ransrc/RanLogic*
 
 | | |
 |---|---|
-| **สถานะ** | 🔴 `OPEN` |
+| **สถานะ** | ✅ `RESOLVED` (ผู้ใช้ตัดสินใจ 2026-11-25: **ข้ามไปก่อน — จัดการตอน Phase 6**) |
 | **กระทบ** | Release APK/AAB ที่ติดตั้ง/อัปสโตร์ได้ |
 
 ไม่มี `.jks` และไม่มีรหัสผ่านใน repo (ถูกต้องตามหลักความปลอดภัย — **ห้ามสร้างแทน**)
@@ -150,12 +150,12 @@ ranmobile_tests: RANMobile/Tests/test_main.cpp:186: int main(): Assertion `tpSta
 
 | งาน | สถานะ |
 |---|---|
-| Phase 3.4 — แก้ login protocol (2142 + `THAI_NET_LOGIN_DATA` 54B + TEA) + test vector | ✅ **ทำได้เลย** |
+| Phase 3.4 — แก้ login protocol (**2079** + `THAI_NET_LOGIN_DATA` 54B + TEA) + test vector | ✅ **เสร็จแล้ว** (ดู `PROTOCOL_FIX_REPORT.md` — หมายเหตุ: opcode ที่ถูกคือ 2079 ไม่ใช่ 2142) |
 | Phase 3.4 — frame reassembly + heartbeat ตามรอบ | ✅ ทำได้เลย |
-| Phase 5 — Login UI responsive + touch feedback + keyboard inset (โครง) | ✅ ทำได้เลย (ภาพรอ B1) |
+| Phase 5 — Login UI responsive + touch feedback + keyboard inset (procedural/vector ตามคำตัดสิน B1) | ✅ ทำได้เลย |
 | Phase 6 — แยก test suite + CI + `TESTING_CHECKLIST.md` | ✅ ทำได้เลย |
-| Phase 3.1/3.3 — mesh/asset pipeline จริง | ⛔ รอ **B1** |
-| Phase 4 — server compat เต็มรูปแบบ | ⛔ รอ **B3 + B4** |
-| Phase 6 — signed release | ⛔ รอ **B5** |
+| Phase 3.1/3.3 — mesh/asset pipeline (procedural/vector ตามคำตัดสิน B1) | ✅ ทำได้เลย (ไม่มี asset ต้นฉบับ — ห้ามกุข้อมูลเกม) |
+| Phase 4 — server compat ระดับ protocol/auth (ตามคำตัดสิน B3/B4) | ✅ ทำได้เลย |
+| Phase 6 — signed release | ⏸️ รอ **B5** (จัดการตอน Phase 6) |
 
-**ผมจะหยุดที่ Phase 1–2 ตามคำสั่ง "เริ่มจาก PHASE 1 ก่อน แล้วรายงานผลก่อนไป Phase ถัดไปทุกครั้ง" และรอคำสั่งว่าจะให้ไป Phase 3 ข้อไหนก่อน (แนะนำ 3.4 ตาม `PROGRESS_REVIEW.md` §6)**
+**Phase 3.4 เสร็จแล้ว — หยุดรอคำสั่งไป Phase ถัดไปตามกฎข้อ 4**

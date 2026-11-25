@@ -14,6 +14,7 @@ set(RANMOBILE_SOURCES
     Engine/Animation/AnimationManager.cpp
     Engine/Audio/AudioManager.cpp
     Engine/Network/NetworkClient.cpp
+    Engine/Network/EP7Tea.cpp
     Data/Validator/DataValidator.cpp
     Data/Importer/EP7AssetImporter.cpp
     Data/Importer/EP7TextureDecoder.cpp
@@ -69,4 +70,7 @@ else()
     add_library(ranmobile_core STATIC ${RANMOBILE_SOURCES})
     add_executable(ranmobile_tests Tests/test_main.cpp)
     target_link_libraries(ranmobile_tests PRIVATE ranmobile_core pthread)
+    # Protocol test: no external assets required (offline test vectors).
+    add_executable(ranmobile_protocol_tests Tests/test_protocol.cpp)
+    target_link_libraries(ranmobile_protocol_tests PRIVATE ranmobile_core pthread)
 endif()
