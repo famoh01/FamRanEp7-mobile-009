@@ -189,3 +189,46 @@ Build env: `g++ (Debian 12.2.0-14) 12.2.0`, `-std=c++17 -O2 -Wall -Wextra -Werro
 
 - **Ready to start planning**, not ready to claim low-risk implementation. Foundation improved (protocol hardening + input vertical slice + GOTO struct evidence), but 3.1/3.3 remain highest risk (R1): no mesh/map renderer, no end-to-end asset->renderer path, and limited real asset availability.
 - Recommend splitting 3.3 (asset decode/load vertical slice) and 3.1 (minimal static mesh/texture draw path) into small PRs with strict no-fake-data gate.
+
+## 10) Addendum — Phase 3.1a + 3.3a Renderer Foundation (Engineering Test Assets Only, 2026-11-25)
+
+### 10.1 สิ่งที่ทำ (Step 1)
+
+**PR-A: Shader + Pipeline Bootstrap**
+- เพิ่ม `Engine/Renderer/RenderMath.h/.cpp`: Mat4 (column-major), Identity/Multiply/Perspective/Ortho/LookAt/Translate/Scale/RotateY/TransformPoint (CPU-only)
+- เพิ่ม `Engine/Renderer/ShaderPipeline.h/.cpp`: GLES3 vertex+fragment shader compile/link/error handling, MVP uniform + sampler set; shader source เป็น `ENGINEERING_TEST_ASSET` (ไม่ใช่เนื้อหาเกม). บน non-Android build คืนค่า `runtimeGLAvailable=false`/log ชัดเจน
+- Unit test: `Tests/test_renderer_math.cpp` — **PASS** (CPU matrix math, ไม่ต้องพึ่ง GPU)
+
+**PR-B: Static Draw Call with Test Texture (Engineering Test Assets)**
+- เพิ่ม `Engine/Renderer/EngineeringTestAssets.h/.cpp`: procedural checkerboard RGBA8, gradient RGBA8, hardcoded unit quad, hardcoded unit cube (24 verts, 36 indices, UV 0..1) — ทุกจุดมี label `ENGINEERING_TEST_ASSET — not game content`
+- เพิ่ม `Engine/Renderer/EngineeringTestRenderer.h/.cpp`: VAO/VBO/IBO upload, texture upload, 1 draw call (cube + checkerboard + MVP) ใต้ `__ANDROID__`; CPU-side layout validation helpers
+- Unit test: `Tests/test_engineering_assets.cpp` — **PASS** (checkerboard/gradient generation, quad/cube vertex layout, UV range [0,1], index range, stride 20 / pos offset 0 / uv offset 12 ตาม GLES3 spec)
+
+**ผลทดสอบรอบนี้**
+
+| Test | Result |
+|---|---:|
+| `ranmobile_renderer_math_tests` | **PASS** |
+| `ranmobile_engineering_assets_tests` | **PASS** |
+
+**หมายเหตุ sandbox/GLES runtime**
+- Sandbox ไม่มี GPU/GLES context สำหรับรัน shader จริง. โค้ด GLES ถูก guard ด้วย `#ifdef __ANDROID__` และ compile ผ่านบน Linux (`-Wall -Wextra -Werror`).
+- สถานะ: **compile-time verified only, runtime ต้องรอ device/CI Android test ตาม B2**.
+
+### 10.2 Step 2 (ข้อมูลสำหรับประเมิน — ยังไม่ลงมือทำ)
+
+> ไม่ได้เขียน parser format จริงใหม่ในรอบนี้ ตามคำสั่ง
+
+**Asset format ที่เกี่ยวข้อง (จากโค้ดที่มีอยู่ใน RANMobile/Data/Importer):**
+
+| Format | สิ่งที่ parser ปัจจุบันทำได้ (evidence ใน repo) | ขนาดไฟล์ตัวอย่างเล็กสุดที่พอทดสอบได้ (ประเมินจาก header) | ความซับซ้อน |
+|---|---|---:|---|
+| `.wld` (world/land) | อ่าน 128-byte fileType + uint32 version; valid version `0x0108-0x0114` (`DxLandMan::VERSION`) | **>= 132 bytes** สำหรับ header-only parse (`EP7WorldCharParser::ParseWldHeader`) | **สูงมาก** สำหรับ full parse: world มี quad/octree, object placement, texture refs, lighting, collision ฯลฯ; header-only ต่ำ |
+| `.chf` (character) | อ่าน uint32 version; รองรับ `0x0100-0x0103` | **>= 4 bytes** สำหรับ header-only parse | **สูง** สำหรับ full parse: bone/mesh/skin/material/animation refs; header-only ต่ำ |
+| `.cps` (skin piece) | อ่าน uint32 version; `0 < version <= 0x00000107` (`DxSkinPiece::VERSION`) | **>= 4 bytes** สำหรับ header-only parse | **สูง** สำหรับ full parse: mesh/texture/material subset; header-only ต่ำ |
+| `.dds` (texture) | `EP7TextureDecoder::DecodeDDS` รองรับ DXT1/DXT3/DXT5/uncompressed RGBA8/BGRA8 | **>= 128 bytes** (DDS header) + block data ขั้นต่ำ (เช่น 4x4 DXT1 = 8 bytes/block) => ~136+ bytes สำหรับภาพเล็กสุดแบบ valid | **กลาง**: header + block decode ชัดเจน; มีหลาย format/flags |
+| `.mtf` (encrypted texture) | `DecryptMTF`: 12-byte header (version,size,fileType) + payload XOR `0x47` + diff `0x03` | **>= 13 bytes** (12 header + 1 byte payload) สำหรับ decrypt path; ใช้งานจริงต้องเป็น DDS/TGA valid หลัง decrypt | **ต่ำ-กลาง**: decrypt ง่าย; complexity อยู่ที่ payload format ภายใน |
+
+**ข้อเสนอเพื่อ Step 2 จริง (เมื่อผู้ใช้พร้อม):**
+- ขอไฟล์ตัวอย่าง **ขนาดเล็กมาก** ที่มีสิทธิ์ใช้งานสำหรับทดสอบ header/parser: 1 ไฟล์ `.wld`, 1 `.chf`, 1 `.cps`, 1 `.dds` (หรือ `.mtf`) ขนาดเล็กสุดเท่าที่หาได้. ไฟล์ header-only/small texture จะเพียงพอสำหรับเริ่ม parser regression tests โดยไม่ต้องโหลด asset ชุดเต็ม.
+- ถ้าไม่สามารถส่ง asset จริงได้ ให้ยืนยันว่าจะอนุญาตสร้าง **synthetic binary fixtures** ที่ mimic เฉพาะ header/layout ตาม format spec ที่อ่านได้จาก source (ไม่ใช่เนื้อหาเกม) เพื่อใช้ใน unit tests — ต้องขออนุมัติก่อนเพราะเป็น binary fixture ใหม่.

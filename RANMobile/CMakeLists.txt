@@ -8,6 +8,10 @@ set(RANMOBILE_SOURCES
     Engine/Core/Logger.cpp
     Engine/Core/RANMobileEngine.cpp
     Engine/Renderer/MobileRenderer.cpp
+    Engine/Renderer/RenderMath.cpp
+    Engine/Renderer/ShaderPipeline.cpp
+    Engine/Renderer/EngineeringTestAssets.cpp
+    Engine/Renderer/EngineeringTestRenderer.cpp
     Engine/Resource/ResourceManager.cpp
     Engine/Touch/TouchSystem.cpp
     Engine/Camera/MobileCamera.cpp
@@ -88,4 +92,9 @@ else()
     # Phase 3.2 input binding vertical slice (offline, no assets)
     add_executable(ranmobile_input_tests Tests/test_input_binding.cpp)
     target_link_libraries(ranmobile_input_tests PRIVATE ranmobile_core pthread)
+    # PR-A/PR-B: renderer foundation (CPU-side validation; GLES runtime on Android)
+    add_executable(ranmobile_renderer_math_tests Tests/test_renderer_math.cpp)
+    target_link_libraries(ranmobile_renderer_math_tests PRIVATE ranmobile_core pthread)
+    add_executable(ranmobile_engineering_assets_tests Tests/test_engineering_assets.cpp)
+    target_link_libraries(ranmobile_engineering_assets_tests PRIVATE ranmobile_core pthread)
 endif()
