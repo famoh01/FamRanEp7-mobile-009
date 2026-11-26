@@ -1,0 +1,64 @@
+name: Android Renderer Compile Check (NDK)
+
+on:
+  push:
+    branches: [ "arena/7d98df66-famranep7-mobile-009" ]
+    paths:
+      - 'RANMobile/Engine/Renderer/**'
+      - 'RANMobile/Engine/Core/Logger.*'
+      - '.github/workflows/android-renderer-compile-check.yml'
+  pull_request:
+    paths:
+      - 'RANMobile/Engine/Renderer/**'
+      - 'RANMobile/Engine/Core/Logger.*'
+      - '.github/workflows/android-renderer-compile-check.yml'
+  workflow_dispatch:
+
+jobs:
+  renderer-ndk-compile:
+    name: Compile renderer objects (arm64-v8a, android-24)
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_API: 24
+      ANDROID_ABI_TRIPLE: aarch64-linux-android24
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Android NDK r25c (PR #1 baseline: NDK r25+)
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25c
+          add-to-path: false
+
+      - name: Show NDK info
+        run: |
+          echo "NDK path: ${{ steps.setup-ndk.outputs.ndk-path }}"
+          ls "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/" | head -5
+
+      - name: Compile renderer + related sources to object files (no APK/AAB link)
+        env:
+          NDK_PATH: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          CXX="$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/${ANDROID_ABI_TRIPLE}-clang++"
+          CXXFLAGS="-std=c++17 -O2 -Wall -Wextra -Werror -D__ANDROID__ -IRANMobile -I. -fPIC -c"
+          mkdir -p /tmp/renderer_obj
+          echo "Using compiler: $CXX"
+          $CXX --version | head -2
+
+          # Compile Renderer sources (requested scope)
+          for src in RANMobile/Engine/Renderer/*.cpp; do
+            obj="/tmp/renderer_obj/$(basename "${src%.cpp}.o")"
+            echo "==> compile $src"
+            $CXX $CXXFLAGS "$src" -o "$obj"
+          done
+
+          # Compile directly related dependency used by renderer (Logger)
+          echo "==> compile RANMobile/Engine/Core/Logger.cpp"
+          $CXX $CXXFLAGS RANMobile/Engine/Core/Logger.cpp -o /tmp/renderer_obj/Logger.o
+
+          echo "Compiled objects:"
+          ls -lh /tmp/renderer_obj/
+          echo "ANDROID_RENDERER_COMPILE_CHECK=PASS"

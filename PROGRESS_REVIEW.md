@@ -232,3 +232,43 @@ Build env: `g++ (Debian 12.2.0-14) 12.2.0`, `-std=c++17 -O2 -Wall -Wextra -Werro
 **ข้อเสนอเพื่อ Step 2 จริง (เมื่อผู้ใช้พร้อม):**
 - ขอไฟล์ตัวอย่าง **ขนาดเล็กมาก** ที่มีสิทธิ์ใช้งานสำหรับทดสอบ header/parser: 1 ไฟล์ `.wld`, 1 `.chf`, 1 `.cps`, 1 `.dds` (หรือ `.mtf`) ขนาดเล็กสุดเท่าที่หาได้. ไฟล์ header-only/small texture จะเพียงพอสำหรับเริ่ม parser regression tests โดยไม่ต้องโหลด asset ชุดเต็ม.
 - ถ้าไม่สามารถส่ง asset จริงได้ ให้ยืนยันว่าจะอนุญาตสร้าง **synthetic binary fixtures** ที่ mimic เฉพาะ header/layout ตาม format spec ที่อ่านได้จาก source (ไม่ใช่เนื้อหาเกม) เพื่อใช้ใน unit tests — ต้องขออนุมัติก่อนเพราะเป็น binary fixture ใหม่.
+
+## Addendum 10.3 — Phase 3.1a/3.3a Step 2 (Synthetic Fixtures) + Android Compile-Check CI
+
+Date: 2026-11-25 (UTC)
+Branch: `arena/7d98df66-famranep7-mobile-009`
+Status: **CPU-verified synthetic fixture parser regression PASS; local `__ANDROID__` stub compile-check PASS; GitHub NDK CI workflow added (run pending on GitHub)**
+
+### Decision (user-approved)
+- Step 2 uses **synthetic binary header fixtures** (no real game assets). No download of large archives.
+
+### Synthetic Fixture Rules Applied
+- Fixtures contain only header/layout-structural bytes derived from documented/source-evidenced version/size constants.
+- No monster/NPC/item/skill/quest/map names or game content. FileType placeholders use `TEST_FIXTURE_*`; payloads use sequential/zero patterns.
+- Every fixture labeled `SYNTHETIC_TEST_FIXTURE — structural layout only, no game content, generated to validate parser mechanics against documented spec`.
+- Fixtures: `RANMobile/Tests/Fixtures/` (`synthetic_wld_*.bin`, `synthetic_chf_*.bin`, `synthetic_cps_*.bin`, `synthetic_dds_*.bin`, `synthetic_mtf_*.bin`, `README.md`).
+
+### Parser Regression Tests (no parser logic changes)
+Test: `RANMobile/Tests/test_synthetic_fixtures.cpp` (`ranmobile_synthetic_fixture_tests`)
+
+| Format | Valid case | Invalid cases | Extra | Result |
+|---|---|---|---|---:|
+| `.wld` | version `0x0108` (min supported), 132B header, placeholder fileType | version below min (`0x0107`), truncated (<132B) | fileType placeholder asserted | **PASS** |
+| `.chf` | versions `0x0100-0x0103` | unsupported version (`0x9999`), truncated (<4B) | - | **PASS** |
+| `.cps` | min `1`, max `0x00000107` (`DxSkinPiece::VERSION`) | zero, over max (`0x00000108`), truncated (<4B) | - | **PASS** |
+| `.dds` | minimal DXT1 4x4 (128B header + 8B block = 136B), decoded RGBA8 all white | bad magic, truncated (<128B), zero dimension | structural decode pixel check | **PASS** |
+| `.mtf` | decrypt known synthetic plaintext/ciphertext pair (XOR 0x47 + diff 0x03), `outFileType==7` | nSize too large, truncated (<=12B) | round-trip proof: inverse encrypt matches fixture cipher and decrypts back | **PASS** |
+
+Sandbox run: `g++ -std=c++17 -O2 -Wall -Wextra -Werror ... -o /tmp/ranmobile_synthetic_fixture_tests && /tmp/ranmobile_synthetic_fixture_tests` → **ALL SYNTHETIC FIXTURE TESTS: PASS**.
+
+### Android Compile-Check CI (B2 partial mitigation)
+- Added workflow: `.github/workflows/android-renderer-compile-check.yml`.
+- NDK: r25c via `nttld/setup-ndk@v1` (consistent with PR #1 baseline "NDK r25+").
+- Scope: compile-only (`-c`) object files for `RANMobile/Engine/Renderer/*.cpp` + `RANMobile/Engine/Core/Logger.cpp` with `aarch64-linux-android24-clang++ -std=c++17 -O2 -Wall -Wextra -Werror -D__ANDROID__ -IRANMobile -I. -fPIC`; **no APK/AAB link**.
+- Local sandbox sanity check: compiled all 5 `RANMobile/Engine/Renderer/*.cpp` with `g++ -D__ANDROID__` against minimal GLES/android/log stubs → **ALL_OK**. This validates Android-guarded syntax locally; it is **not** a substitute for real NDK/GLES headers.
+- **GitHub Actions NDK run status:** workflow added and pushed; actual CI run result is pending on GitHub (NDK not available in this sandbox). If CI fails due to missing GLES headers/deps that should exist in NDK, record as blocker with error details.
+
+### Not done (as ordered)
+- No real game asset decode/content parsing; no .wld/.chf/.cps full mesh/map/content decode.
+- No Phase 5 Login UI changes; no full APK/AAB build.
+- No protocol/packet changes.
