@@ -272,3 +272,60 @@ Sandbox run: `g++ -std=c++17 -O2 -Wall -Wextra -Werror ... -o /tmp/ranmobile_syn
 - No real game asset decode/content parsing; no .wld/.chf/.cps full mesh/map/content decode.
 - No Phase 5 Login UI changes; no full APK/AAB build.
 - No protocol/packet changes.
+
+## Addendum 11.1 — Phase 5 Login UI Redesign (Modern Fantasy Luxury, Procedural/Vector)
+
+Date: 2026-11-25 (UTC)
+Branch: `arena/7d98df66-famranep7-mobile-009`
+Status: **Phase 5 Step 1-3 implemented; unit tests PASS in sandbox; GLES visual runtime verification pending Android device/CI (B2).**
+
+### Scope / constraints honored
+- Procedural/vector UI only (gradient, SDF rounded rect, glow, shadow). No original game bitmap assets used.
+- No logo file found in repo/ThaiPack; UI uses text placeholder with code label `// PLACEHOLDER_LOGO — awaiting official asset`.
+- **No auth/protocol changes:** `LoginScreen::OnLoginPressed()` delegates only to `AuthenticationManager::Login(...)`; no opcode 2079/TEA/56B ABI/packet struct changes.
+- No merge to main; Draft PR #4 updated.
+
+### Step 1 — LoginScreen stub mismatch fix
+- Root cause: `RANMobile/UI/Login/LoginScreen.cpp` was a Phase 5 handoff stub (no-op touch/focus/text/render), while `Tests/test_main.cpp` expected real focus/text/backspace/masked password/settings/exit behavior.
+- Fix: implemented real LoginScreen behavior (layout-aware hit testing, focus, text input/backspace, settings/exit modals, render draw calls) and updated `test_main` sections 15/17 to layout-aware tap coords (down+up) via `LoginScreen::GetLayout()`; preserved test semantics. No protocol behavior fabricated.
+
+### Step 2 — Design system / components / layout
+- `UITheme.h`: central design tokens (bg `#0B0E14→#1A1F2E`, gold `#D4AF37→#F2D88F`, blue `#3A5FCD→#1E3A8A`, glass `rgba(255,255,255,0.06)` blur target 12px, border glow `#FFD700@40%` 1.5px + 4-8px, text `#F5F5F0/#8A8D98`, error `#FF5C5C`, success `#4ADE80`, typography 28/16/12sp, min touch 48dp, login button 56dp, radius 12-16dp).
+- `MobileRenderer`: added extended GLES3 SDF rect shader path (rounded fill, vertical/horizontal gradient, border, glow, shadow) with Android `#ifdef` guards; old DrawUIQuad/DrawUIText API preserved.
+- `UIButton`: reusable 4-state component (Default/Pressed/Disabled/Focus), 120-180ms transition, pressed scale 0.96, brightness -15%, disabled desaturate 70%/opacity 50%, focus ring, shadow, 48dp min target.
+- `UIInputField`: floating label, gold focus glow, rounded box, password mask, UTF-8 backspace, cursor blink.
+- `LoginScreen`: full-bleed gradient bg + lightweight procedural fog blobs (low-end fallback disables heavy effects), centered glass panel, title/subtitle placeholder logo text, username/password fields, login CTA (gold, full-width, 56dp), Register/Forgot text-outline actions (UI-only status message, no auth/protocol), Settings/Exit modals, fade+scale panel entrance 280ms cubic-out.
+
+### Step 3 — Unit tests (no GLES runtime required)
+New: `RANMobile/Tests/test_ui_phase5.cpp` (`ranmobile_ui_phase5_tests`).
+
+| Test | Result |
+|---|---:|
+| Color/design token values match spec | **PASS** |
+| Button state transitions Default/Pressed/Disabled/Focus + 48dp min + 0.96 pressed scale | **PASS** |
+| Layout calculation (1280x720, portrait-ish, small-screen fallback; panel centering; button min sizes) | **PASS** |
+| Input field focus/text/backspace/password mask | **PASS** |
+
+### Regression tests (sandbox)
+
+| Test | Result |
+|---|---:|
+| `ranmobile_tests` (env -u RANMOBILE_TEST_ASSETS) | **PASS** (includes LoginScreen Step 1 fix) |
+| `ranmobile_protocol_tests` | **PASS** |
+| `ranmobile_stream_tests` | **PASS** |
+| `ranmobile_protocol_hardening_tests` | **PASS** |
+| `ranmobile_input_tests` | **PASS** |
+| `ranmobile_renderer_math_tests` | **PASS** |
+| `ranmobile_engineering_assets_tests` | **PASS** |
+| `ranmobile_synthetic_fixture_tests` | **PASS** |
+| `ranmobile_ui_phase5_tests` | **PASS** |
+
+### CI status
+- Previous Step 2 push (`6a34e9a`) GitHub Actions **Android Renderer Compile Check (NDK)**: **SUCCESS** (confirmed via `gh run list`).
+- Phase 5 push touches `MobileRenderer.*` so workflow will trigger again; final status must be checked on GitHub after push (reported in chat).
+
+### Thai font status
+- **B8 OPEN (non-blocking for Phase 5 logic):** no `.ttf/.otf` in repo/ThaiPack; MobileRenderer tries Android system NotoSansThai paths. Thai glyph rendering on devices lacking Thai system font is not guaranteed. Proposed fix: provide licensed Noto Sans Thai (SIL OFL) or approve download/bundle in next round.
+
+### Not done
+- No real GLES/visual runtime screenshot from sandbox (B2). No APK/AAB build. No protocol/auth/packet change. No game-content fabrication.

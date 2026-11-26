@@ -50,6 +50,88 @@ void main() {
 }
 )";
 
+// Phase 5 extended rect shader: rounded SDF fill/gradient/border/glow/shadow.
+// Used for modern UI panels/buttons; keeps existing simple UI shader intact.
+static const char* kUIRectVertexShader = R"(#version 300 es
+layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec2 aUV;
+uniform mat4 uProj;
+out vec2 vPos;
+out vec2 vUV;
+void main() {
+    gl_Position = uProj * vec4(aPos, 0.0, 1.0);
+    vPos = aPos;
+    vUV = aUV;
+}
+)";
+
+static const char* kUIRectFragmentShader = R"(#version 300 es
+precision mediump float;
+in vec2 vPos;
+in vec2 vUV;
+uniform vec4 uRect;        // x,y,w,h in screen px (top-left origin)
+uniform float uRadius;
+uniform vec4 uColorTop;
+uniform vec4 uColorBottom;
+uniform int uUseGradient;  // 0=solid(top),1=vertical,2=horizontal
+uniform float uBorderWidth;
+uniform vec4 uBorderColor;
+uniform float uGlowSize;
+uniform vec4 uGlowColor;
+uniform vec2 uShadowOffset;
+uniform float uShadowBlur;
+uniform int uMode;         // 0=fill,1=border,2=glow,3=shadow
+out vec4 FragColor;
+
+float sdRoundRect(vec2 p, vec2 halfSize, float r) {
+    vec2 q = abs(p) - halfSize + vec2(r);
+    return length(max(q, vec2(0.0))) + min(max(q.x, q.y), 0.0) - r;
+}
+
+void main() {
+    vec2 center = uRect.xy + uRect.zw * 0.5;
+    vec2 halfSize = uRect.zw * 0.5;
+    float r = clamp(uRadius, 0.0, min(halfSize.x, halfSize.y));
+    vec2 p = vPos - center;
+    float d = sdRoundRect(p, halfSize, r);
+
+    vec4 base = uColorTop;
+    if (uUseGradient == 1) {
+        float t = clamp((vPos.y - uRect.y) / max(uRect.w, 1.0), 0.0, 1.0);
+        base = mix(uColorTop, uColorBottom, t);
+    } else if (uUseGradient == 2) {
+        float t = clamp((vPos.x - uRect.x) / max(uRect.z, 1.0), 0.0, 1.0);
+        base = mix(uColorTop, uColorBottom, t);
+    }
+
+    float aa = 1.0;
+    if (uMode == 0) {
+        float fillA = 1.0 - smoothstep(-aa, aa, d);
+        FragColor = vec4(base.rgb, base.a * fillA);
+    } else if (uMode == 1) {
+        float bw = max(uBorderWidth, 0.0);
+        float outer = 1.0 - smoothstep(-aa, aa, d);
+        float inner = 1.0 - smoothstep(-aa, aa, d + bw);
+        float a = clamp(outer - inner, 0.0, 1.0);
+        FragColor = vec4(uBorderColor.rgb, uBorderColor.a * a);
+    } else if (uMode == 2) {
+        float gs = max(uGlowSize, 0.5);
+        // Glow outside the rounded rect boundary.
+        float glow = exp(-max(d, 0.0) / gs) * (1.0 - smoothstep(-aa, aa, d));
+        FragColor = vec4(uGlowColor.rgb, uGlowColor.a * glow);
+    } else if (uMode == 3) {
+        vec2 sp = vPos - center - uShadowOffset;
+        float sd = sdRoundRect(sp, halfSize, r);
+        float sb = max(uShadowBlur, 1.0);
+        float shadow = 1.0 - smoothstep(0.0, sb, sd);
+        FragColor = vec4(base.rgb, base.a * shadow);
+    } else {
+        FragColor = vec4(0.0);
+    }
+    if (FragColor.a <= 0.001) discard;
+}
+)";
+
 static GLuint CompileShader(GLenum type, const char* src) {
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &src, nullptr);
@@ -158,6 +240,36 @@ bool MobileRenderer::Initialize(int width, int height) {
         m_uUseTexLoc = glGetUniformLocation(m_uiProgram, "uUseTexture");
     }
 
+    // Phase 5 extended rect shader
+    {
+        GLuint rvs = CompileShader(GL_VERTEX_SHADER, kUIRectVertexShader);
+        GLuint rfs = CompileShader(GL_FRAGMENT_SHADER, kUIRectFragmentShader);
+        if (rvs && rfs) {
+            m_uiRectProgram = glCreateProgram();
+            glAttachShader(m_uiRectProgram, rvs);
+            glAttachShader(m_uiRectProgram, rfs);
+            glLinkProgram(m_uiRectProgram);
+            glDeleteShader(rvs);
+            glDeleteShader(rfs);
+            m_urProjLoc = glGetUniformLocation(m_uiRectProgram, "uProj");
+            m_urRectLoc = glGetUniformLocation(m_uiRectProgram, "uRect");
+            m_urRadiusLoc = glGetUniformLocation(m_uiRectProgram, "uRadius");
+            m_urColorTopLoc = glGetUniformLocation(m_uiRectProgram, "uColorTop");
+            m_urColorBottomLoc = glGetUniformLocation(m_uiRectProgram, "uColorBottom");
+            m_urUseGradientLoc = glGetUniformLocation(m_uiRectProgram, "uUseGradient");
+            m_urBorderWidthLoc = glGetUniformLocation(m_uiRectProgram, "uBorderWidth");
+            m_urBorderColorLoc = glGetUniformLocation(m_uiRectProgram, "uBorderColor");
+            m_urGlowSizeLoc = glGetUniformLocation(m_uiRectProgram, "uGlowSize");
+            m_urGlowColorLoc = glGetUniformLocation(m_uiRectProgram, "uGlowColor");
+            m_urShadowOffsetLoc = glGetUniformLocation(m_uiRectProgram, "uShadowOffset");
+            m_urShadowBlurLoc = glGetUniformLocation(m_uiRectProgram, "uShadowBlur");
+            m_urModeLoc = glGetUniformLocation(m_uiRectProgram, "uMode");
+        } else {
+            if (rvs) glDeleteShader(rvs);
+            if (rfs) glDeleteShader(rfs);
+        }
+    }
+
     glGenVertexArrays(1, &m_uiVAO);
     glGenBuffers(1, &m_uiVBO);
     glBindVertexArray(m_uiVAO);
@@ -200,6 +312,7 @@ void MobileRenderer::Shutdown() {
     if (m_fontAtlasTex) { glDeleteTextures(1, &m_fontAtlasTex); m_fontAtlasTex = 0; }
     if (m_uiVBO) { glDeleteBuffers(1, &m_uiVBO); m_uiVBO = 0; }
     if (m_uiVAO) { glDeleteVertexArrays(1, &m_uiVAO); m_uiVAO = 0; }
+    if (m_uiRectProgram) { glDeleteProgram(m_uiRectProgram); m_uiRectProgram = 0; }
     if (m_uiProgram) { glDeleteProgram(m_uiProgram); m_uiProgram = 0; }
 #endif
     m_glyphCache.clear();
@@ -313,6 +426,185 @@ void MobileRenderer::DrawUIQuad(float x, float y, float width, float height, flo
     glBindVertexArray(0);
 #else
     (void)x; (void)y; (void)width; (void)height; (void)r; (void)g; (void)b; (void)a;
+#endif
+}
+
+#ifdef __ANDROID__
+static void DrawUIRectInternal(
+    uint32_t program,
+    int32_t uProj, int32_t uRect, int32_t uRadius,
+    int32_t uColorTop, int32_t uColorBottom, int32_t uUseGradient,
+    int32_t uBorderWidth, int32_t uBorderColor,
+    int32_t uGlowSize, int32_t uGlowColor,
+    int32_t uShadowOffset, int32_t uShadowBlur, int32_t uMode,
+    uint32_t vao, uint32_t vbo,
+    int screenW, int screenH,
+    float x, float y, float w, float h, float radius,
+    float r1, float g1, float b1, float a1,
+    float r2, float g2, float b2, float a2,
+    int gradientMode,
+    float borderWidth, float br, float bg, float bb, float ba,
+    float glowSize, float gr, float gg, float gb, float ga,
+    float shOx, float shOy, float shBlur,
+    int mode)
+{
+    if (!program) return;
+    glUseProgram(program);
+    float L = 0.0f, Rr = static_cast<float>(screenW);
+    float T = 0.0f, B = static_cast<float>(screenH);
+    float proj[16] = {
+        2.0f / (Rr - L), 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f / (T - B), 0.0f, 0.0f,
+        0.0f, 0.0f, -1.0f, 0.0f,
+        -(Rr + L) / (Rr - L), -(T + B) / (T - B), 0.0f, 1.0f
+    };
+    glUniformMatrix4fv(uProj, 1, GL_FALSE, proj);
+    glUniform4f(uRect, x, y, w, h);
+    glUniform1f(uRadius, radius);
+    glUniform4f(uColorTop, r1, g1, b1, a1);
+    glUniform4f(uColorBottom, r2, g2, b2, a2);
+    glUniform1i(uUseGradient, gradientMode);
+    glUniform1f(uBorderWidth, borderWidth);
+    glUniform4f(uBorderColor, br, bg, bb, ba);
+    glUniform1f(uGlowSize, glowSize);
+    glUniform4f(uGlowColor, gr, gg, gb, ga);
+    glUniform2f(uShadowOffset, shOx, shOy);
+    glUniform1f(uShadowBlur, shBlur);
+    glUniform1i(uMode, mode);
+
+    // Expand quad for glow/shadow to avoid clipping the effect.
+    float pad = 0.0f;
+    if (mode == 2) pad = glowSize * 3.0f;
+    if (mode == 3) pad = shBlur * 2.0f + std::max(std::abs(shOx), std::abs(shOy));
+    float qx = x - pad, qy = y - pad, qw = w + pad * 2.0f, qh = h + pad * 2.0f;
+    float verts[16] = {
+        qx, qy, 0.0f, 0.0f,
+        qx + qw, qy, 1.0f, 0.0f,
+        qx, qy + qh, 0.0f, 1.0f,
+        qx + qw, qy + qh, 1.0f, 1.0f
+    };
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), verts);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+#endif
+
+void MobileRenderer::DrawUIGradientRect(float x, float y, float width, float height,
+                                        float r1, float g1, float b1, float a1,
+                                        float r2, float g2, float b2, float a2,
+                                        bool vertical) {
+    m_stats.drawCalls++;
+    m_stats.triangles += 2;
+#ifdef __ANDROID__
+    DrawUIRectInternal(m_uiRectProgram,
+        m_urProjLoc, m_urRectLoc, m_urRadiusLoc, m_urColorTopLoc, m_urColorBottomLoc, m_urUseGradientLoc,
+        m_urBorderWidthLoc, m_urBorderColorLoc, m_urGlowSizeLoc, m_urGlowColorLoc,
+        m_urShadowOffsetLoc, m_urShadowBlurLoc, m_urModeLoc,
+        m_uiVAO, m_uiVBO, m_width, m_height,
+        x, y, width, height, 0.0f,
+        r1, g1, b1, a1, r2, g2, b2, a2, vertical ? 1 : 2,
+        0,0,0,0,0, 0,0,0,0,0, 0,0,0, 0);
+#else
+    (void)x; (void)y; (void)width; (void)height;
+    (void)r1; (void)g1; (void)b1; (void)a1; (void)r2; (void)g2; (void)b2; (void)a2; (void)vertical;
+#endif
+}
+
+void MobileRenderer::DrawUIRoundedRect(float x, float y, float w, float h, float radius,
+                                       float r, float g, float b, float a) {
+    m_stats.drawCalls++;
+    m_stats.triangles += 2;
+#ifdef __ANDROID__
+    DrawUIRectInternal(m_uiRectProgram,
+        m_urProjLoc, m_urRectLoc, m_urRadiusLoc, m_urColorTopLoc, m_urColorBottomLoc, m_urUseGradientLoc,
+        m_urBorderWidthLoc, m_urBorderColorLoc, m_urGlowSizeLoc, m_urGlowColorLoc,
+        m_urShadowOffsetLoc, m_urShadowBlurLoc, m_urModeLoc,
+        m_uiVAO, m_uiVBO, m_width, m_height,
+        x, y, w, h, radius,
+        r, g, b, a, r, g, b, a, 0,
+        0,0,0,0,0, 0,0,0,0,0, 0,0,0, 0);
+#else
+    (void)x; (void)y; (void)w; (void)h; (void)radius; (void)r; (void)g; (void)b; (void)a;
+#endif
+}
+
+void MobileRenderer::DrawUIGradientRoundedRect(float x, float y, float w, float h, float radius,
+                                               float r1, float g1, float b1, float a1,
+                                               float r2, float g2, float b2, float a2,
+                                               bool vertical) {
+    m_stats.drawCalls++;
+    m_stats.triangles += 2;
+#ifdef __ANDROID__
+    DrawUIRectInternal(m_uiRectProgram,
+        m_urProjLoc, m_urRectLoc, m_urRadiusLoc, m_urColorTopLoc, m_urColorBottomLoc, m_urUseGradientLoc,
+        m_urBorderWidthLoc, m_urBorderColorLoc, m_urGlowSizeLoc, m_urGlowColorLoc,
+        m_urShadowOffsetLoc, m_urShadowBlurLoc, m_urModeLoc,
+        m_uiVAO, m_uiVBO, m_width, m_height,
+        x, y, w, h, radius,
+        r1, g1, b1, a1, r2, g2, b2, a2, vertical ? 1 : 2,
+        0,0,0,0,0, 0,0,0,0,0, 0,0,0, 0);
+#else
+    (void)x; (void)y; (void)w; (void)h; (void)radius;
+    (void)r1; (void)g1; (void)b1; (void)a1; (void)r2; (void)g2; (void)b2; (void)a2; (void)vertical;
+#endif
+}
+
+void MobileRenderer::DrawUIRoundedBorder(float x, float y, float w, float h, float radius,
+                                         float borderWidth,
+                                         float r, float g, float b, float a) {
+    m_stats.drawCalls++;
+    m_stats.triangles += 2;
+#ifdef __ANDROID__
+    DrawUIRectInternal(m_uiRectProgram,
+        m_urProjLoc, m_urRectLoc, m_urRadiusLoc, m_urColorTopLoc, m_urColorBottomLoc, m_urUseGradientLoc,
+        m_urBorderWidthLoc, m_urBorderColorLoc, m_urGlowSizeLoc, m_urGlowColorLoc,
+        m_urShadowOffsetLoc, m_urShadowBlurLoc, m_urModeLoc,
+        m_uiVAO, m_uiVBO, m_width, m_height,
+        x, y, w, h, radius,
+        0,0,0,0, 0,0,0,0, 0,
+        borderWidth, r,g,b,a, 0,0,0,0,0, 0,0,0, 1);
+#else
+    (void)x; (void)y; (void)w; (void)h; (void)radius; (void)borderWidth; (void)r; (void)g; (void)b; (void)a;
+#endif
+}
+
+void MobileRenderer::DrawUIRoundedGlow(float x, float y, float w, float h, float radius,
+                                       float glowSize, float r, float g, float b, float a) {
+    m_stats.drawCalls++;
+    m_stats.triangles += 2;
+#ifdef __ANDROID__
+    DrawUIRectInternal(m_uiRectProgram,
+        m_urProjLoc, m_urRectLoc, m_urRadiusLoc, m_urColorTopLoc, m_urColorBottomLoc, m_urUseGradientLoc,
+        m_urBorderWidthLoc, m_urBorderColorLoc, m_urGlowSizeLoc, m_urGlowColorLoc,
+        m_urShadowOffsetLoc, m_urShadowBlurLoc, m_urModeLoc,
+        m_uiVAO, m_uiVBO, m_width, m_height,
+        x, y, w, h, radius,
+        0,0,0,0, 0,0,0,0, 0,
+        0,0,0,0,0, glowSize, r,g,b,a, 0,0,0, 2);
+#else
+    (void)x; (void)y; (void)w; (void)h; (void)radius; (void)glowSize; (void)r; (void)g; (void)b; (void)a;
+#endif
+}
+
+void MobileRenderer::DrawUIRoundedShadow(float x, float y, float w, float h, float radius,
+                                         float offsetX, float offsetY, float blur,
+                                         float r, float g, float b, float a) {
+    m_stats.drawCalls++;
+    m_stats.triangles += 2;
+#ifdef __ANDROID__
+    DrawUIRectInternal(m_uiRectProgram,
+        m_urProjLoc, m_urRectLoc, m_urRadiusLoc, m_urColorTopLoc, m_urColorBottomLoc, m_urUseGradientLoc,
+        m_urBorderWidthLoc, m_urBorderColorLoc, m_urGlowSizeLoc, m_urGlowColorLoc,
+        m_urShadowOffsetLoc, m_urShadowBlurLoc, m_urModeLoc,
+        m_uiVAO, m_uiVBO, m_width, m_height,
+        x, y, w, h, radius,
+        r,g,b,a, r,g,b,a, 0,
+        0,0,0,0,0, 0,0,0,0,0, offsetX, offsetY, blur, 3);
+#else
+    (void)x; (void)y; (void)w; (void)h; (void)radius; (void)offsetX; (void)offsetY; (void)blur;
+    (void)r; (void)g; (void)b; (void)a;
 #endif
 }
 

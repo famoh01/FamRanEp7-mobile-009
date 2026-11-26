@@ -34,6 +34,7 @@
 #include "../Data/Converter/RANMobileDataConverter.h"
 
 #include <cassert>
+#include <utility>
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
@@ -210,15 +211,25 @@ int main() {
     assert(skillUI.GetSkillSlot(0)->CanUse());
 
     // 15. Real LoginScreen Focus, Text Input, Backspace, Password Masking, Render
+    // Phase 5: layout-aware hit testing (replaces stale hardcoded coords from old stub).
     auto* engLogin = engine.GetLoginScreen();
     assert(engLogin != nullptr);
-    engLogin->HandleTouchDown(0, 640.0f, 220.0f); // Username field
+    engLogin->ComputeLayout(1280.0f, 720.0f);
+    const auto& ll = engLogin->GetLayout();
+    auto center = [](const RANMobile::UIRect& r) { return std::pair<float,float>{r.x + r.w * 0.5f, r.y + r.h * 0.5f}; };
+    {
+        auto [ux, uy] = center(ll.usernameField);
+        engLogin->HandleTouchDown(0, ux, uy); // Username field
+    }
     assert(engLogin->GetFocus() == LoginFocus::Username);
     engLogin->HandleTextInput("famuser");
     engLogin->HandleBackspace();
     assert(engLogin->GetUsername() == "famuse");
 
-    engLogin->HandleTouchDown(0, 640.0f, 280.0f); // Password field
+    {
+        auto [px, py] = center(ll.passwordField);
+        engLogin->HandleTouchDown(0, px, py); // Password field
+    }
     assert(engLogin->GetFocus() == LoginFocus::Password);
     engLogin->HandleTextInput("secret");
     assert(engLogin->GetMaskedPassword() == "******");
@@ -233,17 +244,22 @@ int main() {
     assert(RANMobile::MobileRenderer::DecodeUTF8(thaiSample, utfIdx) == 0x0E31); // ั (combining)
     assert(engine.GetRenderer()->MeasureTextWidth(thaiSample, 1.0f) > 0.0f);
 
-    // 17. Settings & Exit Confirmation Hit Testing
-    engLogin->HandleTouchDown(0, 420.0f, 485.0f); // Settings button
+    // 17. Settings & Exit Confirmation Hit Testing (layout-aware, tap = down+up)
+    auto tap = [&](const RANMobile::UIRect& r) {
+        auto [x, y] = center(r);
+        engLogin->HandleTouchDown(0, x, y);
+        engLogin->HandleTouchUp(0, x, y);
+    };
+    tap(ll.settingsButton);
     assert(engLogin->IsSettingsOpen());
-    engLogin->HandleTouchDown(0, 640.0f, 300.0f); // Sound toggle
+    tap(ll.soundToggle);
     assert(!engLogin->IsSoundEnabled());
-    engLogin->HandleTouchDown(0, 640.0f, 470.0f); // Close settings
+    tap(ll.settingsClose);
     assert(!engLogin->IsSettingsOpen());
 
-    engLogin->HandleTouchDown(0, 800.0f, 485.0f); // Exit button
+    tap(ll.exitButton);
     assert(engLogin->IsExitConfirmOpen());
-    engLogin->HandleTouchDown(0, 720.0f, 400.0f); // NO
+    tap(ll.exitNo);
     assert(!engLogin->IsExitConfirmOpen());
     assert(!engLogin->WantsExit());
 

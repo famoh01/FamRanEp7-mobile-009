@@ -15,7 +15,8 @@
 | B5 | Release keystore ไม่มี | OPEN (deferred) | 6 release | ยังไม่ใช่งานรอบนี้; debug/unsigned สำหรับ CI ได้; ต้องให้ secrets เมื่อจะทำ release signing |
 | B6 | ดึงไฟล์เสริมจาก Release/Drive | **PARTIAL** | 1,3.3,4 | ผู้ใช้อนุมัติ B6 (2026-11-25): ThaiPack 1.36MB **นำเข้าแล้ว** (fallback ผ่าน Google Drive เนื่องจาก release-assets host ถูกบล็อก); ServerDBTools 49.8MB **ยังนำเข้าไม่ได้** (ดู B6a); Client-TH part ใหญ่ไม่ดึงในรอบนี้ตามคำสั่ง |
 | B6a | `RAN-EP7-ServerDBTools.zip` ดาวน์โหลดไม่ได้ใน sandbox | **OPEN** | 4 schema reference | พยายามแล้ว 3 ทาง: `gh release download` → redirect ไป `release-assets.githubusercontent.com` (EOF/blocked); `gh api .../releases/assets/... -H Accept:application/octet-stream` → redirect เดียวกัน (EOF); `google_drive download_file` (file id `1YZdc1OqAe8rpEfBZ6j_kb9YarLZSZtrO`) → "Could not retrieve the file..." ต้องการ: ผู้ใช้อัปโหลดไฟล์เข้า workspace, หรือวางใน path ที่ sandbox อ่านได้, หรืออนุญาตให้ใช้ schema ที่มีอยู่ใน repo สำรอง/เอกสารอื่นแทน |
-| B7 | Test บางส่วนพึ่ง asset ภายนอก | **RESOLVED** | 6 | ผู้ใช้อนุมัติแยก (2026-11-25). `test_main.cpp` guard ThaiPackLoader ด้วย env `RANMOBILE_TEST_ASSETS=1`; default run จะ skip asset checks. หมายเหตุ: test_main ยังมี pre-existing failure ที่ `LoginScreen` stub (baseline PR #2) ไม่ตรงกับ test expectation ในส่วน focus/text input — ไม่ได้เกิดจากรอบนี้, อยู่นอกขอบเขต Phase 5 ที่ยังไม่สั่ง |
+| B7 | Test บางส่วนพึ่ง asset ภายนอก | **RESOLVED** | 6 | ผู้ใช้อนุมัติแยก (2026-11-25). `test_main.cpp` guard ThaiPackLoader ด้วย env `RANMOBILE_TEST_ASSETS=1`; default run จะ skip asset checks. หมายเหตุเดิมเรื่อง LoginScreen stub mismatch ถูกแก้ใน Phase 5 (Step 1) แล้ว; `test_main` ผ่านใน sandbox โดยไม่ต้องใช้ asset จริง. |
+| B8 | ไม่มีไฟล์ Thai font (.ttf/.otf) ที่มีสิทธิ์ bundle ใน repo | **OPEN** | 5 (Thai text rendering) | ThaiPack ไม่มี .ttf/.otf. `MobileRenderer` พยายามโหลด system fonts บน Android (`/system/fonts/NotoSansThai-*.ttf`) แต่ sandbox ไม่มี font และ repo ไม่มี bundled font. ผล: DecodeUTF8/MeasureTextWidth ทำงาน แต่ glyph rendering จริงบนเครื่องที่ไม่มี Thai font จะ fallback/ว่าง. ต้องการจากผู้ใช้: (A) อัปโหลดไฟล์ font ไทยที่มีสิทธิ์ใช้งาน (เช่น NotoSansThai-Regular.ttf, SIL/OFL) เข้า repo/assets, หรือ (B) อนุมัติให้ bundle NotoSansThai จาก Google Fonts (SIL OFL) ในรอบถัดไป. ชั่วคราว: ใช้ system font fallback บน Android; ไม่ block Phase 5 logic/layout tests. |
 
 ## รายละเอียดการปิด Blocker
 
@@ -55,3 +56,15 @@
 
 - ระหว่าง import baseline PR #2: พบ add/add conflict ที่คาดได้ 3 ไฟล์ (`ARCHITECTURE.md`, `BLOCKERS.md`, `README.md`).
 - วิธีจัดการแบบโปร่งใส: commit Phase 1 docs ก่อน, แล้ว `git checkout FETCH_HEAD -- .` และ restore `ARCHITECTURE.md`/`BLOCKERS.md` จาก HEAD ของ branch นี้; `README.md` ใช้จาก PR #2 baseline. บันทึกไว้ใน commit message `c765f53`. ไม่มีการเลือกข้างเงียบๆ สำหรับเนื้อหา protocol/code; code ทั้งหมดมาจาก PR #2 ตรงๆ.
+
+### B8 — Thai font asset missing (พบระหว่าง Phase 5)
+- **สถานะ:** OPEN (non-blocking for Phase 5 logic/layout; blocks guaranteed Thai glyph rendering)
+- **สิ่งที่ตรวจพบ:**
+  - `RANMobile/Data/External/ThaiPack/` ไม่มี `.ttf/.otf`
+  - `MobileRenderer::Initialize` พยายามโหลด system fonts: `/system/fonts/NotoSansThai-Regular.ttf`, `/system/fonts/NotoSansThaiUI-Regular.ttf`, `/system/fonts/DroidSansFallback.ttf`
+  - ใน sandbox ไม่มีไฟล์เหล่านี้; บน Android ส่วนใหญ่มี NotoSansThai แต่ไม่รับประกันทุกอุปกรณ์/ROM
+- **ผลกระทบ:** Thai text อาจ render ไม่ครบถ้าระบบไม่มี font; unit tests ที่ตรวจ DecodeUTF8/MeasureTextWidth/layout/state ยังผ่าน
+- **ข้อเสนอแก้:**
+  1. ผู้ใช้อัปโหลด Thai font ที่มีสิทธิ์ (แนะนำ Noto Sans Thai, SIL OFL) เข้า `RANMobile/Assets/Fonts/` แล้วให้ผม wire bundle/load path
+  2. หรืออนุมัติให้ดาวน์โหลด NotoSansThai-Regular.ttf (SIL OFL, Google Fonts) ในรอบถัดไป - ต้องยืนยันสิทธิ์/แหล่งที่ผู้ใช้ยอมรับ
+  3. ชั่วคราว: พึ่ง system font บน Android + keep layout logic font-metric tolerant
