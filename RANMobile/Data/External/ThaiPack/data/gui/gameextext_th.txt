@@ -1,0 +1,180 @@
+/////////////////////////////////////////////////////////////////////////////
+VERSION,1
+///////////////////////////////////////////////////////////
+//
+//Attention! Using % as a beginning symbol ( %d, %f, %s etc.)
+//On the basis of the system's amount or the words and so on to transform
+//
+SENTENSE,SERVERSTAGE_1,1
+กำลังอ่านข้อมูลบัญชีจากเซิร์ฟเวอร์
+SENTENSE,SERVERSTAGE_2,1
+กรุณาเลือกเซิร์ฟเวอร์ที่ต้องการเชื่อมต่อ
+SENTENSE,SERVERSTAGE_3,1
+คุณต้องการออกจากเกมหรือไม่?
+SENTENSE,SERVERSTAGE_4,2
+การเชื่อมต่ออินเทอร์เน็ตขัดข้อง!
+คุณต้องการออกจาก RAN หรือไม่?
+SENTENSE,SERVERSTAGE_5,1
+เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ!
+SENTENSE,LOGIN_FAILED_INVALID_VER,3
+มี Client เวอร์ชันใหม่!
+คุณต้องออกจากเกมก่อนเพื่ออัปเดตเวอร์ชันล่าสุด
+เริ่มโปรแกรมใหม่อีกครั้ง?
+SENTENSE,LOGIN_FAILED_VER_FILE,3
+โปรแกรม Client เสียหาย!
+กรุณาถอนการติดตั้งและติดตั้งโปรแกรมใหม่
+แล้วเริ่มเกมอีกครั้ง
+SENTENSE,DAUM_LOGIN_WAIT_SERVERFULL,2
+ไม่มีการตอบสนองจากเซิร์ฟเวอร์
+คุณต้องการเชื่อมต่อใหม่หรือไม่?
+SENTENSE,LOGINSTAGE_1,2
+คุณถูกตัดการเชื่อมต่อ!
+ต้องการเชื่อมต่อใหม่หรือไม่?
+SENTENSE,LOGINSTAGE_2,1
+กรุณาเลือกเซิร์ฟเวอร์ที่ต้องการเชื่อมต่อ
+SENTENSE,LOGINSTAGE_3,1
+กรุณาเลือกเซิร์ฟเวอร์ที่ต้องการเชื่อมต่อ
+SENTENSE,LOGINSTAGE_4,2
+ชื่อผู้ใช้ไม่ถูกต้อง
+มีอักขระพิเศษหรือเว้นวรรค
+SENTENSE,LOGINSTAGE_5,1
+กรุณากรอกชื่อผู้ใช้และรหัสผ่าน
+SENTENSE,LOGINSTAGE_6,2
+กำลังตรวจสอบข้อมูลผู้ใช้!
+กรุณารอสักครู่...
+SENTENSE,LOGIN_FAILED,1
+เข้าสู่ระบบไม่สำเร็จ
+SENTENSE,LOGINSTAGE_8,1
+ระบบขัดข้องทำให้เข้าสู่ระบบไม่สำเร็จ
+SENTENSE,LOGINSTAGE_9,1
+เกิดข้อผิดพลาดเกี่ยวกับเวลาใช้งาน!
+SENTENSE,LOGINSTAGE_10,1
+บัญชีนี้กำลังถูกใช้งานอยู่!
+SENTENSE,LOGINSTAGE_11,2
+ชื่อผู้ใช้และรหัสผ่านไม่ตรงกัน!
+กรุณาตรวจสอบอีกครั้ง
+SENTENSE,LOGINSTAGE_12,2
+IP ของคุณถูกบล็อก!
+กรุณาติดต่อ GM
+SENTENSE,LOGINSTAGE_BLOCK,2
+บัญชีนี้ถูกบล็อก!
+กรุณาติดต่อ GM
+SENTENSE,LOGINSTAGE_UNKNOWN_FAILED,3
+ข้อมูลบัญชีไม่ถูกต้อง!
+กรุณาเยี่ยมชมเว็บไซต์ FAQ อย่างเป็นทางการ
+หรือติดต่อ GM
+SENTENSE,CREATESTAGE_1,2
+อินเทอร์เน็ตขาดการเชื่อมต่อ!
+ต้องการเชื่อมต่อใหม่หรือไม่?
+SENTENSE,CREATESTAGE_2,1
+กรุณากรอกชื่อตัวละคร
+SENTENSE,CREATESTAGE_3,1
+คุณต้องการออกจากเกมหรือไม่?
+SENTENSE,CREATESTAGE_4,1
+สร้างตัวละครสำเร็จ!
+SENTENSE,CREATESTAGE_5,1
+ชื่อนี้ไม่สามารถใช้ได้
+SENTENSE,CREATESTAGE_6,1
+คุณสร้างตัวละครเกินจำนวนสูงสุดที่อนุญาต
+SENTENSE,CREATESTAGE_7,1
+สร้างตัวละครใหม่ไม่สำเร็จ!
+SENTENSE,CREATESTAGE_8,1
+ชื่อตัวละครต้องไม่มีอักขระพิเศษหรือเว้นวรรค
+SENTENSE,NEWCHAR_NAME_TOO_SHORT,1
+ชื่อตัวละครสั้นเกินไป!
+SENTENSE,CHARACTERSTAGE_CAUTION_DELETE,2
+หากต้องการลบ "%s"
+กรุณากรอกรหัสผ่านชั้นที่สอง
+SENTENSE,CHARACTERSTAGE_CAUTION_DELETE_DAUM,1
+ยืนยันการลบ?
+SENTENSE,CHARACTERSTAGE_2,2
+อินเทอร์เน็ตขาดการเชื่อมต่อ!
+ต้องการเชื่อมต่อใหม่หรือไม่?
+SENTENSE,CHARACTERSTAGE_3,1
+คุณต้องการออกจากเกมหรือไม่?
+SENTENSE,CHARACTERSTAGE_4,1
+คุณต้องการสร้างตัวละครใหม่หรือไม่?
+SENTENSE,CHARACTERSTAGE_GAME_JOIN,1
+กำลังประมวลผลข้อมูล
+SENTENSE,CHARACTERSTAGE_6,1
+คุณต้องการไปยังเมนูเซิร์ฟเวอร์หรือไม่?
+SENTENSE,CHARACTERSTAGE_NOT_SELECTED,1
+กรุณาเลือกตัวละครที่ต้องการลบ
+SENTENSE,CHARACTERSTAGE_8,1
+กรุณาเลือกตัวละคร
+SENTENSE,CHARACTERSTAGE_9,1
+ลบตัวละครไม่สำเร็จ!
+SENTENSE,CHARACTERSTAGE_10,2
+ตัวละครนี้กำลังอยู่ในระหว่างการเชื่อมต่อ!
+กรุณาเชื่อมต่อใหม่อีกครั้ง
+SENTENSE,CHARACTERSTAGE_11,2
+สร้างตัวละครใหม่ไม่สำเร็จ!
+กรุณาเชื่อมต่อใหม่อีกครั้ง
+SENTENSE,CHARACTERSTAGE_12,1
+คุณไม่สามารถเข้าช่องนี้ได้
+SENTENSE,CHAR_DEL_SUCCEED,1
+ลบตัวละครสำเร็จ
+SENTENSE,CHAR_DEL_FAILED,1
+ลบตัวละครไม่สำเร็จ
+SENTENSE,LOGIN_PAGE_ID_ERROR,2
+บัญชีไม่สามารถใช้
+อักขระพิเศษหรือเว้นวรรคได้
+SENTENSE,LOGIN_PAGE_PW_ERROR,1
+กรุณากรอกรหัสผ่าน
+WORD,SERVER_NAME,10
+FamHawaii,FamHawaii EP7,Server2,Server3,Server4,Server5,Server6,Server7,Server8,Server9
+WORD,SERVER_CHANNEL,1
+ช่อง
+WORD,SERVER_PK,1
+[PK]
+SENTENSE,CREATE_CHARACTER_NAME_ERROR,2
+ชื่อไม่สามารถใช้
+อักขระพิเศษหรือเว้นวรรคได้
+SENTENSE,LOGINSTAGE_INVALID_LOGIN,4
+เข้าสู่ระบบผิดปกติ!
+กรุณากดปุ่ม "ยืนยัน"
+เพื่อออกจากเกม
+แล้วลองใหม่อีกครั้ง
+SENTENSE,LOGINSTAGE_EXPIRED_USER,4
+หมดเวลายืนยันการเข้าสู่ระบบ!
+กรุณากดปุ่ม "ยืนยัน"
+เพื่อออกจากเกม
+แล้วลองใหม่อีกครั้ง
+SENTENSE,LOGINSTAGE_NOGID,3
+เข้าสู่ระบบผิดปกติ! กรุณากดปุ่ม "ยืนยัน"
+เพื่อออกจากเกม
+แล้วลองใหม่อีกครั้ง
+SENTENSE,LOGINSTAGE_NOUID,4
+หมดเวลายืนยันการเข้าสู่ระบบ!
+กรุณากดปุ่ม "ยืนยัน"
+เพื่อออกจากเกม
+แล้วลองใหม่อีกครั้ง
+SENTENSE,DAUM_LOGIN_WAIT,2
+กำลังเชื่อมต่อเซิร์ฟเวอร์
+กรุณารอสักครู่!
+SENTENSE,CHARACTERSTAGE_DAUM_GAME_JOIN_FAIL,1
+ประมวลผลข้อมูลตัวละครไม่สำเร็จ!
+SENTENSE,CHARACTER_BADNAME,1
+ชื่อตัวละครมีคำที่ไม่เหมาะสม!
+SENTENSE,LOGINSTAGE_SSN_FAILED,2
+ข้อมูลบัตรประจำตัวไม่ตรงกัน
+กรุณากดปุ่ม "ยืนยัน" ก่อนหมดเวลา
+SENTENSE,LOGINSTAGE_ADULT_FAILED,2
+เข้าสู่ระบบไม่สำเร็จ!
+กรุณากดปุ่ม "ยืนยัน" ก่อนหมดเวลา
+SENTENSE,CHARACTER_THIS_SERVER_SLOT_FULL,1
+เซิร์ฟเวอร์ไม่สามารถสร้างตัวละครใหม่ได้!
+SENTENSE,CHARACTER_NOT_ENOUGH_CHARREMAIN,1
+"การ์ดตัวละคร" ไม่เพียงพอ!
+SENTENSE,CHAR_DEL_CLUB_FAILED,2
+ลบตัวละครไม่สำเร็จ!
+กรุณายุบองค์กรก่อนแล้วลองใหม่อีกครั้ง
+SENTENSE,WAITSERVER_DEL_CHARACTER,1
+ตัวละครกำลังจะถูกลบ
+SENTENSE,SERVER_INFO_RECV_FAILED,1
+เชื่อมต่อเมนูเซิร์ฟเวอร์ไม่สำเร็จ
+SENTENSE,LOGINSTAGE_FULL,2
+จำนวนผู้เล่นในเซิร์ฟเวอร์เกินขีดจำกัดสูงสุด
+กรุณาเชื่อมต่อใหม่ภายหลัง
+SENTENSE,CHAR_DELETE_ON,1
+กำลังลบตัวละคร...
