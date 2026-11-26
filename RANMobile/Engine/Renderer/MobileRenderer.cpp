@@ -192,7 +192,17 @@ bool MobileRenderer::Initialize(int width, int height) {
     m_height = height > 0 ? height : 720;
     m_settings.ApplyPreset(GraphicsQuality::Medium);
 
+    // Bundled font priority (B8): Noto Sans Thai (SIL OFL), bundled in repo.
+    const char* bundledFontPaths[] = {
+        "RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf",
+        "Assets/Fonts/NotoSansThai-Regular.ttf",
+        "../Assets/Fonts/NotoSansThai-Regular.ttf",
+        "./RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf"
+    };
+
     const char* primaryPaths[] = {
+        "RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf",
+        "Assets/Fonts/NotoSansThai-Regular.ttf",
         "/system/fonts/Roboto-Regular.ttf",
         "/system/fonts/NotoSans-Regular.ttf",
         "/system/fonts/DroidSans.ttf"
@@ -207,10 +217,15 @@ bool MobileRenderer::Initialize(int width, int height) {
     }
 
     const char* thaiPaths[] = {
+        "RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf",
+        "Assets/Fonts/NotoSansThai-Regular.ttf",
+        "../Assets/Fonts/NotoSansThai-Regular.ttf",
+        "./RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf",
         "/system/fonts/NotoSansThai-Regular.ttf",
         "/system/fonts/NotoSansThaiUI-Regular.ttf",
         "/system/fonts/DroidSansFallback.ttf"
     };
+    (void)bundledFontPaths; // documented priority list; thaiPaths includes bundled first
     for (const char* p : thaiPaths) {
         if (LoadFontFile(p, m_thaiFontData) &&
             stbtt_InitFont(&g_thaiFontInfo, m_thaiFontData.data(), 0)) {

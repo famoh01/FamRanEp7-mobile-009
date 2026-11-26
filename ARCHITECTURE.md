@@ -269,3 +269,9 @@ git show FETCH_HEAD:PROTOCOL_FIX_REPORT.md
 ---
 
 *เอกสารนี้เป็น Phase 1 output บน branch `arena/7d98df66-famranep7-mobile-009`. ข้อเท็จจริง upstream ที่อ้างจาก PR #2 ถูกระบุว่าเป็นผลตรวจจาก upstream audit เดิม; ผมไม่ได้กุข้อมูลเกมใหม่และไม่ได้แก้ protocol/game logic.*
+
+## Third-Party / Bundled Asset Attribution
+
+| Asset | Source | License | Location | Notes |
+|---|---|---|---|---|
+| Noto Sans Thai (Regular) | Google Fonts / notofonts (official): `google/fonts` repo, `ofl/notosansthai/NotoSansThai[wdth,wght].ttf` instantiated to static Regular (wght=400, wdth=100) via fonttools | SIL Open Font License 1.1 (OFL) | `RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf`, `RANMobile/Assets/Fonts/LICENSE-OFL.txt` | Bundled for Thai text rendering in MobileRenderer (B8). Not derived from game assets. |

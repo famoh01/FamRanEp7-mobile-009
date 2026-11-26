@@ -329,3 +329,28 @@ New: `RANMobile/Tests/test_ui_phase5.cpp` (`ranmobile_ui_phase5_tests`).
 
 ### Not done
 - No real GLES/visual runtime screenshot from sandbox (B2). No APK/AAB build. No protocol/auth/packet change. No game-content fabrication.
+
+## Addendum 11.2 — B8 Fix: Bundled Noto Sans Thai (SIL OFL)
+
+Date: 2026-11-25 (UTC)
+Branch: `arena/7d98df66-famranep7-mobile-009`
+Status: **B8 RESOLVED (font bundled, MobileRenderer priority wired, license/attribution added).**
+
+### What changed
+- Downloaded `NotoSansThai[wdth,wght].ttf` and `OFL.txt` from official Google Fonts repo: `google/fonts/ofl/notosansthai` (via GitHub API, allowed host).
+- Instantiated static Regular (wght=400, wdth=100) with `fonttools` from PyPI (allowed host): `RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf` (47,788 bytes).
+- Added full license text: `RANMobile/Assets/Fonts/LICENSE-OFL.txt` (SIL OFL 1.1).
+- `MobileRenderer::Initialize`: bundled font paths (`RANMobile/Assets/Fonts/...`, `Assets/Fonts/...`, `../Assets/Fonts/...`) added as **first priority** before system font fallbacks for both primary and Thai font loading.
+- Attribution added to `ARCHITECTURE.md`.
+
+### Verification
+| Check | Result |
+|---|---:|
+| stb_truetype `InitFont` on bundled ttf | **PASS** (init=1, size=47788) |
+| Thai glyph U+0E01 (ก) present | **PASS** (glyph index 29, adv 600) |
+| MobileRenderer.cpp compile (sandbox g++) | **PASS** |
+| Existing regression tests (see Phase 5 report) | **PASS** (no code-path regression; font load path only adds earlier candidates) |
+
+### Notes
+- Font is not derived from game assets. SIL OFL allows bundling with software when license text is included.
+- GLES runtime glyph rendering still requires Android device/CI (B2 scope).
