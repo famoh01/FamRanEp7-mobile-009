@@ -7,9 +7,11 @@
 #include "../Network/NetworkClient.h"
 #include "../../Data/Loader/GameDataLoader.h"
 #include "../../UI/Login/LoginScreen.h"
+#include "../../UI/CharacterSelect/CharacterSelectScreen.h"
 #include "../../UI/HUD/MobileHUD.h"
 #include "../../Client/Gameplay/CharacterController.h"
 #include "../../Client/Input/MovementInputController.h"
+#include "../../Client/Character/CharacterSelectManager.h"
 
 RANMobileEngine::RANMobileEngine() = default;
 RANMobileEngine::~RANMobileEngine() {
@@ -32,6 +34,8 @@ bool RANMobileEngine::Initialize() {
     m_networkClient = std::make_unique<RANMobile::NetworkClient>();
     m_gameDataLoader = std::make_unique<RANMobile::GameDataLoader>();
     m_loginScreen = std::make_unique<LoginScreen>();
+    m_characterSelectManager = std::make_unique<RANMobile::CharacterSelectManager>();
+    m_characterSelectScreen = std::make_unique<RANMobile::CharacterSelectScreen>();
     m_mobileHUD = std::make_unique<RANMobile::MobileHUD>();
     m_characterController = std::make_unique<RANMobile::CharacterController>();
     m_movementInput = std::make_unique<RANMobile::MovementInputController>();
@@ -42,6 +46,7 @@ bool RANMobileEngine::Initialize() {
     }
 
     m_loginScreen->Initialize(m_networkClient.get());
+    m_characterSelectScreen->Initialize(m_networkClient.get(), m_characterSelectManager.get());
     m_mobileHUD->Initialize(1280.0f, 720.0f);
     m_initialized = true;
     RANMobile::Logger::Info("RANMobileEngine", "RANMobileEngine initialized successfully.");
@@ -79,6 +84,16 @@ void RANMobileEngine::Update(float deltaTime) {
     if (m_screenState == EngineScreenState::Login && m_loginScreen) {
         m_loginScreen->Update(deltaTime);
     }
+    if (m_screenState == EngineScreenState::CharacterSelect && m_characterSelectScreen) {
+        m_characterSelectScreen->Update(deltaTime);
+        if (m_characterSelectScreen->WantsBack()) {
+            m_characterSelectScreen->ClearWantsBack();
+            m_screenState = EngineScreenState::Login;
+        } else if (m_characterSelectScreen->WantsStartGame()) {
+            m_characterSelectScreen->ClearWantsStartGame();
+            m_screenState = EngineScreenState::InGame;
+        }
+    }
     if (m_screenState == EngineScreenState::InGame) {
         if (m_mobileHUD) m_mobileHUD->Update(deltaTime);
         if (m_characterController && m_mobileHUD && m_camera) {
@@ -114,6 +129,8 @@ void RANMobileEngine::Render() {
     m_renderer->BeginFrame();
     if (m_screenState == EngineScreenState::Login && m_loginScreen) {
         m_loginScreen->Draw(m_renderer.get());
+    } else if (m_screenState == EngineScreenState::CharacterSelect && m_characterSelectScreen) {
+        m_characterSelectScreen->Draw(m_renderer.get());
     } else if (m_screenState == EngineScreenState::InGame && m_mobileHUD) {
         m_mobileHUD->Draw(m_renderer.get());
     }
@@ -142,6 +159,10 @@ void RANMobileEngine::OnTouchDown(int pointerId, float x, float y) {
         m_loginScreen->HandleTouchDown(pointerId, x, y);
         return;
     }
+    if (m_screenState == EngineScreenState::CharacterSelect && m_characterSelectScreen) {
+        m_characterSelectScreen->HandleTouchDown(pointerId, x, y);
+        return;
+    }
     if (m_screenState == EngineScreenState::InGame && m_mobileHUD) {
         m_mobileHUD->OnTouchDown(pointerId, x, y);
     }
@@ -153,6 +174,10 @@ void RANMobileEngine::OnTouchMove(int pointerId, float x, float y) {
         m_loginScreen->HandleTouchMove(pointerId, x, y);
         return;
     }
+    if (m_screenState == EngineScreenState::CharacterSelect && m_characterSelectScreen) {
+        m_characterSelectScreen->HandleTouchMove(pointerId, x, y);
+        return;
+    }
     if (m_screenState == EngineScreenState::InGame && m_mobileHUD) {
         m_mobileHUD->OnTouchMove(pointerId, x, y);
     }
@@ -162,6 +187,10 @@ void RANMobileEngine::OnTouchUp(int pointerId, float x, float y) {
     if (m_touchSystem) m_touchSystem->OnTouchUp(pointerId, x, y);
     if (m_screenState == EngineScreenState::Login && m_loginScreen) {
         m_loginScreen->HandleTouchUp(pointerId, x, y);
+        return;
+    }
+    if (m_screenState == EngineScreenState::CharacterSelect && m_characterSelectScreen) {
+        m_characterSelectScreen->HandleTouchUp(pointerId, x, y);
         return;
     }
     if (m_screenState == EngineScreenState::InGame && m_mobileHUD) {

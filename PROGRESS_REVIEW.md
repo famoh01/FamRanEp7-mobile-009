@@ -354,3 +354,62 @@ Status: **B8 RESOLVED (font bundled, MobileRenderer priority wired, license/attr
 ### Notes
 - Font is not derived from game assets. SIL OFL allows bundling with software when license text is included.
 - GLES runtime glyph rendering still requires Android device/CI (B2 scope).
+
+## Addendum 12.1 — Part A B8 (verified) + Part B Character Select + Part C Raw Source Investigation
+
+Date: 2026-11-25 (UTC)
+Branch: `arena/7d98df66-famranep7-mobile-009`
+Status: **B8 already resolved/verified; Character Select UI shell implemented (tests PASS); Part C investigation completed with B9 blocker recorded (no data fabricated).**
+
+### Part A — B8 Font Fix
+- Verified present from commit `3e41adb`: `RANMobile/Assets/Fonts/NotoSansThai-Regular.ttf` (47,788B, SIL OFL) + `LICENSE-OFL.txt`; `MobileRenderer` bundled-first font load; attribution in `ARCHITECTURE.md`. No regression.
+
+### Part B — Character Select Screen (Phase 5 UI scope extension)
+- Added `RANMobile/UI/CharacterSelect/CharacterSelectScreen.h/.cpp` (procedural/vector, UITheme/UIButton/MobileRenderer primitives).
+- Fields bind to `RANMobile::EP7CharacterSlot` struct (`charId`, `name`, `level`, `charClass`) from `Client/Character/CharacterSelectManager.h` — no hardcoded real game names/stats.
+- Mockup/test labels only: `[SLOT_EMPTY]`, `TEST_SLOT_A`, `TEST_SLOT_B`. Class label mapping derived from source-evidenced `EMCHARCLASS` enum values in `GLCharDefine.h` (e.g. `0x0001 -> FIGHTER-M`), unknown values rendered as `CLASS-0x####`.
+- Wired into `RANMobileEngine`: `CharacterSelectManager` + `CharacterSelectScreen` created/initialized; update/render/touch routed for `EngineScreenState::CharacterSelect`; UI-only transitions Back->Login, StartGame->InGame (no protocol fabrication).
+- CMake target: `ranmobile_character_select_tests`.
+
+### Part C — Raw Source Investigation (Skill/Monster/Character)
+
+#### Scope inspected
+1. `matheomedrana/Ran-Online-EP7-Complete-Files` (as requested)
+2. `famoh01/ran-online-ep7` (readable original source used in this session)
+
+#### Findings
+
+| Source | Path(s) inspected | File type / observation | Case | Outcome |
+|---|---|---|---:|---|
+| Backup repo | `(Source Code).../Lib_Client/G-Logic/GLSkill.h` (and other G-Logic .h/.cpp), `EditorSkill/`, `EditorMobNpc/`, etc. | Git LFS pointers (e.g. GLSkill.h pointer 130B, actual 2958B, sha256 `b561fa4...`); source content not fetchable in sandbox | **C (blocked by LFS access in sandbox)** | Cannot parse/build/read actual content |
+| Backup repo | `Ran Online Database/Ran Online Database SQL Script Files/RanGame1.sql` (100664B), `RanUser.sql` (96604B), `RanLog.sql`, `RanShop.sql` | Git LFS pointers (131/130B pointers). SQL content not readable without LFS fetch | **A/C blocked** (would likely be readable SQL text if fetched; currently inaccessible) | Cannot parse |
+| Backup repo | `Ran Online Database/Ran Online Database Backup Files (.bak)` | Binary MSSQL backup files (dir present) | **C** | Requires MSSQL/restore tooling; not sandbox-readable |
+| famoh01/ran-online-ep7 | `RanClientLib/G-Logic/GLSkill.h/.cpp`, `GLCrowData.h/.cpp`, `GLCharData.h/.cpp`, `GLCharDefine.h` | Readable C++ source (non-LFS). Defines structs/enums/loaders/save/csv; **no hardcoded skill/monster/character stat record arrays** observed in inspected files. Data records loaded from game data files at runtime (e.g. skill/crow/item data files managed by *Man loaders). | **B (structure only), records external** | No parseable stat record table in C++ source; no fabricated data |
+
+#### LFS access attempts (backup repo)
+- `gh api` contents returned LFS pointer text/base64.
+- LFS batch API `https://github.com/matheomedrana/Ran-Online-EP7-Complete-Files.git/info/lfs/objects/batch` → **403 Forbidden** (with gh token Bearer, with Basic x-access-token, and anonymous).
+- `git lfs` not installed in sandbox; `media.githubusercontent.com` not in sandbox allowlist.
+
+#### Result
+- **Parsed skill/monster/character stat records: 0** (no accessible plain-text/script hardcoded table; no fabrication).
+- B9 recorded in `BLOCKERS.md` with explicit user needs.
+
+### Tests (sandbox)
+
+| Test | Result |
+|---|---:|
+| `ranmobile_tests` (`env -u RANMOBILE_TEST_ASSETS`) | **PASS** |
+| `ranmobile_ui_phase5_tests` | **PASS** |
+| `ranmobile_character_select_tests` | **PASS** |
+| `ranmobile_protocol_tests` | **PASS** |
+| `ranmobile_stream_tests` | **PASS** |
+| `ranmobile_protocol_hardening_tests` | **PASS** |
+| `ranmobile_input_tests` | **PASS** |
+| `ranmobile_renderer_math_tests` | **PASS** |
+| `ranmobile_engineering_assets_tests` | **PASS** |
+| `ranmobile_synthetic_fixture_tests` | **PASS** |
+
+### Not done / constraints
+- No Skill/Monster/Character stat/name fabricated. No protocol/packet changes. No merge to main.
+- Character Select is UI shell + struct binding; not wired to real server character-list packets (would require source-evidenced packet audit before wiring).

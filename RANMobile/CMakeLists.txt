@@ -43,6 +43,8 @@ set(RANMOBILE_SOURCES
     UI/Components/UIInputField.cpp
     UI/Login/LoginScreen.h
     UI/Login/LoginScreen.cpp
+    UI/CharacterSelect/CharacterSelectScreen.h
+    UI/CharacterSelect/CharacterSelectScreen.cpp
     UI/Joystick/VirtualJoystick.cpp
     UI/Buttons/MobileButton.cpp
     UI/Buttons/MobileSkillButton.cpp
@@ -103,4 +105,7 @@ else()
     # Phase 5: UI redesign unit tests (layout/state/tokens, no GLES runtime)
     add_executable(ranmobile_ui_phase5_tests Tests/test_ui_phase5.cpp)
     target_link_libraries(ranmobile_ui_phase5_tests PRIVATE ranmobile_core pthread)
+    # Phase 5 ext: Character Select UI shell (mock labels only, no real game data)
+    add_executable(ranmobile_character_select_tests Tests/test_character_select.cpp)
+    target_link_libraries(ranmobile_character_select_tests PRIVATE ranmobile_core pthread)
 endif()

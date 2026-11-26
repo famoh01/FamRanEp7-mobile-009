@@ -13,6 +13,8 @@ namespace RANMobile {
     class GameDataLoader;
     class CharacterController;
     class MovementInputController;
+    class CharacterSelectManager;
+    class CharacterSelectScreen;
 }
 class LoginScreen;
 namespace RANMobile { class MobileHUD; }
@@ -46,6 +48,8 @@ public:
     void OnBackspace();
 
     LoginScreen* GetLoginScreen() const { return m_loginScreen.get(); }
+    RANMobile::CharacterSelectScreen* GetCharacterSelectScreen() const { return m_characterSelectScreen.get(); }
+    RANMobile::CharacterSelectManager* GetCharacterSelectManager() const { return m_characterSelectManager.get(); }
     RANMobile::MobileHUD* GetMobileHUD() const { return m_mobileHUD.get(); }
     void SetScreenState(EngineScreenState state) { m_screenState = state; }
     EngineScreenState GetScreenState() const { return m_screenState; }
@@ -78,6 +82,8 @@ private:
     std::unique_ptr<RANMobile::NetworkClient> m_networkClient;
     std::unique_ptr<RANMobile::GameDataLoader> m_gameDataLoader;
     std::unique_ptr<LoginScreen> m_loginScreen;
+    std::unique_ptr<RANMobile::CharacterSelectManager> m_characterSelectManager;
+    std::unique_ptr<RANMobile::CharacterSelectScreen> m_characterSelectScreen;
     std::unique_ptr<RANMobile::MobileHUD> m_mobileHUD;
     std::unique_ptr<RANMobile::CharacterController> m_characterController;
     std::unique_ptr<RANMobile::MovementInputController> m_movementInput;

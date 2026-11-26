@@ -270,6 +270,12 @@ git show FETCH_HEAD:PROTOCOL_FIX_REPORT.md
 
 *เอกสารนี้เป็น Phase 1 output บน branch `arena/7d98df66-famranep7-mobile-009`. ข้อเท็จจริง upstream ที่อ้างจาก PR #2 ถูกระบุว่าเป็นผลตรวจจาก upstream audit เดิม; ผมไม่ได้กุข้อมูลเกมใหม่และไม่ได้แก้ protocol/game logic.*
 
+## STANDING POLICY (บันทึกถาวร)
+
+- ข้อมูล Skill/Monster/Character stat ที่จะแสดงใน UI ใดๆ ต้องมาจาก **server-side data source ที่มีหลักฐานจริงเท่านั้น** ห้าม fabricate/เดาค่าเด็ดขาด
+- ถ้า parse/build ข้อมูลจาก raw source ไม่สำเร็จ: ห้ามใส่ placeholder ที่ดูเหมือนข้อมูลเกมจริงแทน — ปล่อยเป็นช่องว่าง/บันทึก blocker แทน
+- Protocol constants/packet structure/game logic ต้องตรงต้นฉบับ 100%
+
 ## Third-Party / Bundled Asset Attribution
 
 | Asset | Source | License | Location | Notes |
