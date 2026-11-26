@@ -31,6 +31,7 @@ set(RANMOBILE_SOURCES
     Client/Quest/QuestManager.cpp
     Client/Map/MapManager.cpp
     Client/Chat/ChatManager.cpp
+    Client/Input/MovementInputController.cpp
     UI/UITheme.h
     UI/Components/UIButton.h
     UI/Components/UIButton.cpp
@@ -81,4 +82,10 @@ else()
     target_link_libraries(ranmobile_stream_tests PRIVATE ranmobile_core pthread)
     add_executable(ranmobile_protocol_tests Tests/test_protocol.cpp)
     target_link_libraries(ranmobile_protocol_tests PRIVATE ranmobile_core pthread)
+    # Protocol hardening tests (Phase 3.4, offline, no assets)
+    add_executable(ranmobile_protocol_hardening_tests Tests/test_protocol_hardening.cpp)
+    target_link_libraries(ranmobile_protocol_hardening_tests PRIVATE ranmobile_core pthread)
+    # Phase 3.2 input binding vertical slice (offline, no assets)
+    add_executable(ranmobile_input_tests Tests/test_input_binding.cpp)
+    target_link_libraries(ranmobile_input_tests PRIVATE ranmobile_core pthread)
 endif()

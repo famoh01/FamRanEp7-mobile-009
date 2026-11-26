@@ -8,6 +8,8 @@
 #include "../../Data/Loader/GameDataLoader.h"
 #include "../../UI/Login/LoginScreen.h"
 #include "../../UI/HUD/MobileHUD.h"
+#include "../../Client/Gameplay/CharacterController.h"
+#include "../../Client/Input/MovementInputController.h"
 
 RANMobileEngine::RANMobileEngine() = default;
 RANMobileEngine::~RANMobileEngine() {
@@ -31,6 +33,8 @@ bool RANMobileEngine::Initialize() {
     m_gameDataLoader = std::make_unique<RANMobile::GameDataLoader>();
     m_loginScreen = std::make_unique<LoginScreen>();
     m_mobileHUD = std::make_unique<RANMobile::MobileHUD>();
+    m_characterController = std::make_unique<RANMobile::CharacterController>();
+    m_movementInput = std::make_unique<RANMobile::MovementInputController>();
 
     if (!m_renderer->Initialize(1280, 720)) {
         RANMobile::Logger::Error("RANMobileEngine", "Failed to initialize MobileRenderer");
@@ -72,8 +76,31 @@ void RANMobileEngine::Update(float deltaTime) {
     if (m_camera) {
         m_camera->Update(deltaTime);
     }
-    if (m_loginScreen) {
+    if (m_screenState == EngineScreenState::Login && m_loginScreen) {
         m_loginScreen->Update(deltaTime);
+    }
+    if (m_screenState == EngineScreenState::InGame) {
+        if (m_mobileHUD) m_mobileHUD->Update(deltaTime);
+        if (m_characterController && m_mobileHUD && m_camera) {
+            m_characterController->Update(deltaTime, m_mobileHUD->GetJoystick(), *m_camera);
+        }
+        if (m_movementInput && m_mobileHUD && m_camera && m_characterController) {
+            const auto& joy = m_mobileHUD->GetJoystick();
+            m_movementInput->Update(deltaTime,
+                                    joy.GetAxisX(), joy.GetAxisY(), joy.GetMagnitude(),
+                                    m_camera->GetYaw(),
+                                    m_characterController->GetPosX(),
+                                    m_characterController->GetPosY(),
+                                    m_characterController->GetPosZ(),
+                                    4.0f, 8.0f);
+            RANMobile::EP7SNetPCGoto pkt;
+            if (m_movementInput->BuildGotoPacket(pkt) && m_networkClient) {
+                const auto* bytes = reinterpret_cast<const uint8_t*>(&pkt);
+                m_networkClient->SendPacket(pkt.nmg.nType,
+                                            bytes + sizeof(RANMobile::EP7NetMsgGeneric),
+                                            pkt.nmg.dwSize - static_cast<uint32_t>(sizeof(RANMobile::EP7NetMsgGeneric)));
+            }
+        }
     }
     if (m_networkClient) {
         m_networkClient->Poll(deltaTime);
@@ -111,17 +138,35 @@ void RANMobileEngine::Resume() {
 
 void RANMobileEngine::OnTouchDown(int pointerId, float x, float y) {
     if (m_touchSystem) m_touchSystem->OnTouchDown(pointerId, x, y);
-    if (m_loginScreen) m_loginScreen->HandleTouchDown(pointerId, x, y);
+    if (m_screenState == EngineScreenState::Login && m_loginScreen) {
+        m_loginScreen->HandleTouchDown(pointerId, x, y);
+        return;
+    }
+    if (m_screenState == EngineScreenState::InGame && m_mobileHUD) {
+        m_mobileHUD->OnTouchDown(pointerId, x, y);
+    }
 }
 
 void RANMobileEngine::OnTouchMove(int pointerId, float x, float y) {
     if (m_touchSystem) m_touchSystem->OnTouchMove(pointerId, x, y);
-    if (m_loginScreen) m_loginScreen->HandleTouchMove(pointerId, x, y);
+    if (m_screenState == EngineScreenState::Login && m_loginScreen) {
+        m_loginScreen->HandleTouchMove(pointerId, x, y);
+        return;
+    }
+    if (m_screenState == EngineScreenState::InGame && m_mobileHUD) {
+        m_mobileHUD->OnTouchMove(pointerId, x, y);
+    }
 }
 
 void RANMobileEngine::OnTouchUp(int pointerId, float x, float y) {
     if (m_touchSystem) m_touchSystem->OnTouchUp(pointerId, x, y);
-    if (m_loginScreen) m_loginScreen->HandleTouchUp(pointerId, x, y);
+    if (m_screenState == EngineScreenState::Login && m_loginScreen) {
+        m_loginScreen->HandleTouchUp(pointerId, x, y);
+        return;
+    }
+    if (m_screenState == EngineScreenState::InGame && m_mobileHUD) {
+        m_mobileHUD->OnTouchUp(pointerId, x, y);
+    }
 }
 
 void RANMobileEngine::OnTextInput(const std::string& utf8) {

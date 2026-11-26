@@ -75,8 +75,58 @@ struct alignas(4) EP7ThaiNetLoginData {
         std::memset(szPassword, 0, sizeof(szPassword));
     }
 };
+// --- Phase 3.2 (evidence-backed GCTRL movement, no new opcodes) ---
+// Source: netclientLib/s_NetGlobal.h (2007-04-11 active block)
+//   NET_MSG_GCTRL = NET_MSG_BASE + 1900  => TH_PARAM 989+1900 = 2889
+//   NET_MSG_GCTRL_MOVESTATE = NET_MSG_GCTRL + 140  => 3029
+//   NET_MSG_GCTRL_GOTO      = NET_MSG_GCTRL + 142  => 3031
+// Source: RanClientLib/G-Logic/GLContrlPcMsg.h
+//   struct SNETPC_GOTO { NET_MSG_GENERIC nmg; DWORD dwActState;
+//                        D3DXVECTOR3 vCurPos; D3DXVECTOR3 vTarPos; } (pack(1), 36B)
+//   struct SNETPC_MOVESTATE { NET_MSG_GENERIC nmg; DWORD dwActState; } (12B)
+// Source: RanClientLib/G-Logic/GLCharDefine.h
+//   EM_ACT_RUN = 0x00000001
+constexpr int32_t EP7_NET_MSG_GCTRL = EP7_NET_MSG_BASE + 1900; // 2889
+constexpr int32_t EP7_NET_MSG_GCTRL_MOVESTATE = EP7_NET_MSG_GCTRL + 140; // 3029
+constexpr int32_t EP7_NET_MSG_GCTRL_GOTO = EP7_NET_MSG_GCTRL + 142;      // 3031
+constexpr uint32_t EP7_EM_ACT_RUN = 0x00000001;
+
+struct EP7Vec3 {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+};
+static_assert(sizeof(EP7Vec3) == 12, "D3DXVECTOR3-compatible size");
+
+// SNETPC_GOTO (GLContrlPcMsg.h): client->server movement goto intent.
+struct EP7SNetPCGoto {
+    EP7NetMsgGeneric nmg;
+    uint32_t dwActState = 0;
+    EP7Vec3 vCurPos{};
+    EP7Vec3 vTarPos{};
+    EP7SNetPCGoto() {
+        nmg.dwSize = static_cast<uint32_t>(sizeof(EP7SNetPCGoto));
+        nmg.nType = EP7_NET_MSG_GCTRL_GOTO;
+    }
+};
+
+// SNETPC_MOVESTATE (GLContrlPcMsg.h): movement state flag (run/walk).
+struct EP7SNetPCMoveState {
+    EP7NetMsgGeneric nmg;
+    uint32_t dwActState = 0;
+    EP7SNetPCMoveState() {
+        nmg.dwSize = static_cast<uint32_t>(sizeof(EP7SNetPCMoveState));
+        nmg.nType = EP7_NET_MSG_GCTRL_MOVESTATE;
+    }
+};
+
 #pragma pack(pop)
 
 } // namespace RANMobile
 
 static_assert(sizeof(RANMobile::EP7ThaiNetLoginData) == 56, "Native PC login ABI");
+static_assert(sizeof(RANMobile::EP7SNetPCGoto) == 36, "SNETPC_GOTO size");
+static_assert(sizeof(RANMobile::EP7SNetPCMoveState) == 12, "SNETPC_MOVESTATE size");
+static_assert(RANMobile::EP7_NET_MSG_GCTRL == 2889, "TH GCTRL base");
+static_assert(RANMobile::EP7_NET_MSG_GCTRL_MOVESTATE == 3029, "MOVESTATE opcode");
+static_assert(RANMobile::EP7_NET_MSG_GCTRL_GOTO == 3031, "GOTO opcode");

@@ -36,6 +36,7 @@
 #include <cassert>
 #include <iostream>
 #include <cmath>
+#include <cstdlib>
 
 int main() {
     std::cout << "=== RAN ONLINE EP7 — FAM HAWAII MOBILE: UNIT & INTEGRATION TESTS ===\n";
@@ -188,10 +189,16 @@ int main() {
     assert(pool.AvailableCount() == 4);
 
     // 14. Phase 32-41: Real ThaiPackLoader + InventoryUI + SkillUI
-    auto tpStats = RANMobile::ThaiPackLoader::InspectThaiPack("external/ep7_release/thaipack_original");
-    assert(tpStats.found);
-    assert(tpStats.ntkCount == 309);
-    assert(tpStats.qstCount == 730);
+    // B7 (approved 2026-11-25): asset-dependent tests are opt-in.
+    // Set RANMOBILE_TEST_ASSETS=1 to run checks that require external EP7 assets.
+    if (const char* runAssets = std::getenv("RANMOBILE_TEST_ASSETS"); runAssets && std::string(runAssets) == "1") {
+        auto tpStats = RANMobile::ThaiPackLoader::InspectThaiPack("external/ep7_release/thaipack_original");
+        assert(tpStats.found);
+        assert(tpStats.ntkCount == 309);
+        assert(tpStats.qstCount == 730);
+    } else {
+        std::cout << "[SKIP] ThaiPackLoader asset checks (set RANMOBILE_TEST_ASSETS=1)\n";
+    }
 
     RANMobile::InventoryUI invUI;
     invUI.Initialize(&inv);

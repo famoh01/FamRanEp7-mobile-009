@@ -11,6 +11,8 @@ namespace RANMobile {
     class MobileCamera;
     class NetworkClient;
     class GameDataLoader;
+    class CharacterController;
+    class MovementInputController;
 }
 class LoginScreen;
 namespace RANMobile { class MobileHUD; }
@@ -60,6 +62,8 @@ public:
     RANMobile::MobileCamera* GetCamera() const { return m_camera.get(); }
     RANMobile::NetworkClient* GetNetworkClient() const { return m_networkClient.get(); }
     RANMobile::GameDataLoader* GetGameDataLoader() const { return m_gameDataLoader.get(); }
+    RANMobile::CharacterController* GetCharacterController() const { return m_characterController.get(); }
+    RANMobile::MovementInputController* GetMovementInputController() const { return m_movementInput.get(); }
 
 private:
     bool m_initialized = false;
@@ -75,5 +79,7 @@ private:
     std::unique_ptr<RANMobile::GameDataLoader> m_gameDataLoader;
     std::unique_ptr<LoginScreen> m_loginScreen;
     std::unique_ptr<RANMobile::MobileHUD> m_mobileHUD;
+    std::unique_ptr<RANMobile::CharacterController> m_characterController;
+    std::unique_ptr<RANMobile::MovementInputController> m_movementInput;
     EngineScreenState m_screenState = EngineScreenState::Login;
 };

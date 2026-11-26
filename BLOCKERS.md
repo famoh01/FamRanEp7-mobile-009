@@ -15,7 +15,7 @@
 | B5 | Release keystore ไม่มี | OPEN (deferred) | 6 release | ยังไม่ใช่งานรอบนี้; debug/unsigned สำหรับ CI ได้; ต้องให้ secrets เมื่อจะทำ release signing |
 | B6 | ดึงไฟล์เสริมจาก Release/Drive | **PARTIAL** | 1,3.3,4 | ผู้ใช้อนุมัติ B6 (2026-11-25): ThaiPack 1.36MB **นำเข้าแล้ว** (fallback ผ่าน Google Drive เนื่องจาก release-assets host ถูกบล็อก); ServerDBTools 49.8MB **ยังนำเข้าไม่ได้** (ดู B6a); Client-TH part ใหญ่ไม่ดึงในรอบนี้ตามคำสั่ง |
 | B6a | `RAN-EP7-ServerDBTools.zip` ดาวน์โหลดไม่ได้ใน sandbox | **OPEN** | 4 schema reference | พยายามแล้ว 3 ทาง: `gh release download` → redirect ไป `release-assets.githubusercontent.com` (EOF/blocked); `gh api .../releases/assets/... -H Accept:application/octet-stream` → redirect เดียวกัน (EOF); `google_drive download_file` (file id `1YZdc1OqAe8rpEfBZ6j_kb9YarLZSZtrO`) → "Could not retrieve the file..." ต้องการ: ผู้ใช้อัปโหลดไฟล์เข้า workspace, หรือวางใน path ที่ sandbox อ่านได้, หรืออนุญาตให้ใช้ schema ที่มีอยู่ใน repo สำรอง/เอกสารอื่นแทน |
-| B7 | Test บางส่วนพึ่ง asset ภายนอก | WORKAROUND (deferred) | 6 | `test_main.cpp` เคยพึ่ง `external/ep7_release/thaipack_original`; รอบนี้รันเฉพาะ protocol/stream tests ที่ไม่พึ่ง asset และผ่านทั้งหมด. จะแยก suite เป็น core vs asset-opt-in ใน Phase 6 หรือเมื่อได้รับอนุมัติ |
+| B7 | Test บางส่วนพึ่ง asset ภายนอก | **RESOLVED** | 6 | ผู้ใช้อนุมัติแยก (2026-11-25). `test_main.cpp` guard ThaiPackLoader ด้วย env `RANMOBILE_TEST_ASSETS=1`; default run จะ skip asset checks. หมายเหตุ: test_main ยังมี pre-existing failure ที่ `LoginScreen` stub (baseline PR #2) ไม่ตรงกับ test expectation ในส่วน focus/text input — ไม่ได้เกิดจากรอบนี้, อยู่นอกขอบเขต Phase 5 ที่ยังไม่สั่ง |
 
 ## รายละเอียดการปิด Blocker
 

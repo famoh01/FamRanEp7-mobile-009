@@ -152,3 +152,40 @@ Build env: `g++ (Debian 12.2.0-14) 12.2.0`, `-std=c++17 -O2 -Wall -Wextra -Werro
 จากนั้นค่อยทำ **3.2 input binding** (vertical slice เล็กๆ) และ **3.1/3.3** แบบแบ่ง PR ย่อย โดยเฉพาะ 3.1 ต้องมีแผน asset/mesh scope ชัดเจนก่อนเริ่มเขียน renderer ใหญ่.
 
 **ห้ามเริ่ม Phase 3/5 ในรอบนี้ตามคำสั่ง master command — หยุดรอคำสั่งถัดไป**
+
+---
+
+## 9) Addendum — Phase 3.4 + Phase 3.2 (2026-11-25, this round)
+
+### 9.1 Part A — Protocol Hardening (offline)
+
+| Test | Coverage (evidence-based) | Result |
+|---|---|---:|
+| `ranmobile_protocol_tests` | TEA key derivation; TEA encrypt/decrypt (5 cases); THAI login roundtrip (56B, 2079); field order; 20-char truncation | **PASS** |
+| `ranmobile_stream_tests` | Frame reassembly split/bytewise/coalesced/partial/invalid/reset/1024B; heartbeat golden wire; agent key/rolling TEA; malformed sizes; Poll fragmentation/callback/EOF | **PASS** |
+| `ranmobile_protocol_hardening_tests` | TEA edge cases (setKey null/empty/invalid len/all-zero/custom key roundtrip); EP7Stream min/max/invalid/recover/coalesced-3; Heartbeat 5 rolling rounds + malformed sizes + reset; NetworkClient guards (disconnected/oversize/null payload) | **PASS** |
+
+**Notes (evidence discipline):**
+- No new opcodes/structs invented. Added tests only for behaviors present in baseline code and cited upstream evidence.
+- Reconnect/session timeout: **no explicit constant added** (no authoritative source evidence in mobile codebase this round). Documented as live-verify gap in `LIVE_VERIFY_CHECKLIST.md`.
+- `LIVE_VERIFY_CHECKLIST.md` added with capture steps for login/heartbeat/framing/movement and reporting template.
+
+### 9.2 Part B — Input Binding Vertical Slice (offline)
+
+| Item | Evidence / implementation | Result |
+|---|---|---:|
+| Protocol constants/structs | Added `EP7_NET_MSG_GCTRL=2889`, `EP7_NET_MSG_GCTRL_GOTO=3031`, `EP7_NET_MSG_GCTRL_MOVESTATE=3029`, `EP7_EM_ACT_RUN=0x1`, `EP7SNetPCGoto` (36B), `EP7SNetPCMoveState` (12B) with source citations to `s_NetGlobal.h`, `GLContrlPcMsg.h`, `GLCharDefine.h` | **PASS** (static_assert) |
+| State machine extensibility | `InputStateMachine` supports Movement/Skill/Inventory/Interact/None transitions; Movement active, Skill/Inventory placeholders only | **PASS** |
+| Touch→intent→packet mapping | `MovementInputController`: joystick axis + camera yaw + pos/speed/dt → `MovementIntent` → `EP7SNetPCGoto`; deadzone/idle handled; run/walk via EM_ACT_RUN | **PASS** |
+| Engine wiring | `RANMobileEngine` routes InGame touch to `MobileHUD`; Update builds GOTO packet and sends via `NetworkClient::SendPacket` (existing transport) | **Code complete (offline test covered mapping; no live send verified)** |
+| Unit tests | `ranmobile_input_tests`: state machine, GOTO layout/opcode, joystick mapping, touch->joystick->intent, camera yaw rotation | **PASS** |
+
+### 9.3 B7
+
+- `test_main.cpp` now guards ThaiPackLoader asset checks behind `RANMOBILE_TEST_ASSETS=1` (approved 2026-11-25).
+- Running `test_main` without assets reveals **pre-existing baseline failure** at LoginScreen focus/text stub (not caused by this round; Phase 5 scope).
+
+### 9.4 Phase 3.1/3.3 readiness (preliminary)
+
+- **Ready to start planning**, not ready to claim low-risk implementation. Foundation improved (protocol hardening + input vertical slice + GOTO struct evidence), but 3.1/3.3 remain highest risk (R1): no mesh/map renderer, no end-to-end asset->renderer path, and limited real asset availability.
+- Recommend splitting 3.3 (asset decode/load vertical slice) and 3.1 (minimal static mesh/texture draw path) into small PRs with strict no-fake-data gate.
