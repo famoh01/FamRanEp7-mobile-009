@@ -1,61 +1,57 @@
 # BLOCKERS.md — RAN Online EP7 · PC → Mobile
 
-> อัปเดต: 2026-11-25 (Phase 1, branch `arena/7d98df66-famranep7-mobile-009`)
+> อัปเดต: 2026-11-25 (หลัง Consolidate Baseline + Phase 2)
+> Branch: `arena/7d98df66-famranep7-mobile-009`
 > กฎ: เจอ blocker = บันทึกที่นี่ + ระบุสิ่งที่ต้องการ + หยุดรอคำสั่งถัดไปก่อนข้าม (Master Command ข้อ 4)
 
 ## สรุปสถานะ
 
-| ID | Blocker | สถานะ | กระทบ Phase | ต้องการจากผู้ใช้ |
+| ID | Blocker | สถานะ | กระทบ | การตัดสินใจ/หมายเหตุ |
 |---|---|---|---|---|
-| B1 | Asset เกมต้นฉบับไม่อยู่ใน Git / ไฟล์ใหญ่เข้าถึงยาก | OPEN (มี workaround บางส่วน) | 3.1,3.3,5 | ตัดสินใจแนวทาง asset (ดูด้านล่าง) |
-| B2 | ไม่มี Android SDK/NDK/Gradle/adb ใน sandbox | WORKAROUND (CI) | 6, device test | ทดสอบบน device จริงโดยผู้ใช้ หรือยอมรับ CI-only |
-| B3 | ไม่มี Live EP7 Server + MSSQL | OPEN (offline verify ได้บางส่วน) | 3.4 E2E,4,6 | ให้ endpoint+บัญชีทดสอบ หรือยอมรับ offline protocol test |
-| B4 | `RanLogic/`, `RanLogicClient/`, `RanLogicServer/` ไม่มีใน upstream repo | OPEN | 4 เต็มรูปแบบ | อัปโหลด/ชี้แหล่ง RanLogic* หรือจำกัด Phase 4 เป็น protocol/auth |
-| B5 | Release keystore ไม่มี | OPEN (debug ได้) | 6 release | ให้ secrets keystore หรือยอมรับ debug/unsigned |
-| B6 | Google Drive ไฟล์ใหญ่ / release asset host จำกัด | WORKAROUND | 1,3.1,3.3 | อัปโหลดไฟล์เฉพาะที่จำเป็นเข้าสู่ workspace/repo ที่เข้าถึงได้ |
-| B7 | Test บางส่วนพึ่ง asset ภายนอก | WORKAROUND | 6 | อนุมัติแยก asset-dependent tests เป็น opt-in |
+| B1 | Asset เกมต้นฉบับ (logo/bg/UI bitmaps) ไม่อยู่ใน Git | **RESOLVED (policy)** | 3.1,3.3,5 | ผู้ใช้อนุมัติ **ทางเลือก B** (2026-11-25): ใช้ Procedural/Vector UI ชั่วคราวสำหรับ Phase 5; ห้ามใช้ asset เกมที่ไม่มีสิทธิ์/ไม่มีไฟล์; เตรียม architecture ให้สลับ asset จริงภายหลัง; โลโก้เกมใช้ของจริงได้เฉพาะเมื่อมีไฟล์ที่เข้าถึงได้ถูกสิทธิ์ |
+| B2 | ไม่มี Android SDK/NDK/Gradle/adb ใน sandbox | **RESOLVED (scope)** | 6 local build | ผู้ใช้อนุมัติ B2 (2026-11-25): ยอมรับ CI-only build ใน sandbox; ผู้ใช้ทดสอบบนอุปกรณ์จริงเอง |
+| B3 | ไม่มี Live EP7 Server + MSSQL | **RESOLVED (scope)** | 3.4 E2E,4,6 | ผู้ใช้อนุมัติ B3 (2026-11-25): ยอมรับ offline protocol verification + capture checklist ไปก่อน; ยังไม่มี live server/บัญชีทดสอบ |
+| B4 | `RanLogic*` ไม่มีใน upstream repo | **RESOLVED (scope)** | 4 | ผู้ใช้อนุมัติ B4 (2026-11-25): จำกัด Phase 4 เฉพาะ protocol/auth compatibility layer ที่ mobile client ต้องใช้; ไม่ทำ full RanLogic porting |
+| B5 | Release keystore ไม่มี | OPEN (deferred) | 6 release | ยังไม่ใช่งานรอบนี้; debug/unsigned สำหรับ CI ได้; ต้องให้ secrets เมื่อจะทำ release signing |
+| B6 | ดึงไฟล์เสริมจาก Release/Drive | **PARTIAL** | 1,3.3,4 | ผู้ใช้อนุมัติ B6 (2026-11-25): ThaiPack 1.36MB **นำเข้าแล้ว** (fallback ผ่าน Google Drive เนื่องจาก release-assets host ถูกบล็อก); ServerDBTools 49.8MB **ยังนำเข้าไม่ได้** (ดู B6a); Client-TH part ใหญ่ไม่ดึงในรอบนี้ตามคำสั่ง |
+| B6a | `RAN-EP7-ServerDBTools.zip` ดาวน์โหลดไม่ได้ใน sandbox | **OPEN** | 4 schema reference | พยายามแล้ว 3 ทาง: `gh release download` → redirect ไป `release-assets.githubusercontent.com` (EOF/blocked); `gh api .../releases/assets/... -H Accept:application/octet-stream` → redirect เดียวกัน (EOF); `google_drive download_file` (file id `1YZdc1OqAe8rpEfBZ6j_kb9YarLZSZtrO`) → "Could not retrieve the file..." ต้องการ: ผู้ใช้อัปโหลดไฟล์เข้า workspace, หรือวางใน path ที่ sandbox อ่านได้, หรืออนุญาตให้ใช้ schema ที่มีอยู่ใน repo สำรอง/เอกสารอื่นแทน |
+| B7 | Test บางส่วนพึ่ง asset ภายนอก | WORKAROUND (deferred) | 6 | `test_main.cpp` เคยพึ่ง `external/ep7_release/thaipack_original`; รอบนี้รันเฉพาะ protocol/stream tests ที่ไม่พึ่ง asset และผ่านทั้งหมด. จะแยก suite เป็น core vs asset-opt-in ใน Phase 6 หรือเมื่อได้รับอนุมัติ |
 
-## รายละเอียด
+## รายละเอียดการปิด Blocker
 
-### B1 — Asset เกมต้นฉบับ
-- **ข้อเท็จจริง**: upstream git ไม่มี `.rcc/.dds/.ntk/.wld/.chf/.cps` และไม่มีโฟลเดอร์ gui/skin/texture ตาม PR #2 audit. Release `ran-ep7-full-v1` มี client split zip ใหญ่ (1.57GB+1.01GB) แต่ release-assets host ถูกจำกัดใน sandbox ก่อนหน้า; Google Drive ไฟล์ใหญ่เกินเพดานที่เหมาะสม.
-- **ผลกระทบ**: Phase 3.1/3.3 ไม่สามารถ validate กับ asset จริงครบได้; Phase 5 ต้องใช้โลโก้/พื้นหลังต้นฉบับถ้ามี — แต่ asset ไม่อยู่ใน Git.
-- **ทางเลือก**:
-  - A: ผู้ใช้อัปโหลดเฉพาะ `data/gui` หรือไฟล์ที่ Phase 5 ต้องใช้ (เล็ก) เข้ามา workspace
-  - B: อนุญาตให้ใช้ **procedural/vector UI ชั่วคราว** สำหรับ Phase 5 (ไม่แต่งข้อมูลเกม) และสลับเป็น asset เดิมเมื่อมีไฟล์ — ต้องการคำยืนยันชัดเจน
-  - C: ให้สิทธิ์/วิธีดาวน์โหลดที่ sandbox เข้าถึงได้
-- **สถานะ**: รอคำตัดสินผู้ใช้
+### B1 — Procedural/Vector UI ชั่วคราว (อนุมัติ 2026-11-25)
+- อนุมัติทางเลือก B. ข้อกำหนดที่ต้องปฏิบัติใน Phase 5:
+  - ห้ามใช้ asset เกมจริงที่ไม่มีสิทธิ์/ไม่มีไฟล์
+  - UI chrome (พื้นหลัง, panel, border, glow) ต้อง generate จากโค้ด (shader/vector/gradient) ไม่ใช้บิตแมปจากเกมต้นฉบับ
+  - โลโก้เกมต้นฉบับใช้ของจริงได้เฉพาะเมื่อมีไฟล์ที่เข้าถึงได้ถูกสิทธิ์
+  - ต้องเตรียม architecture ให้สลับ asset จริงภายหลัง (config/resource key แทน hardcode path)
 
-### B2 — ไม่มี Android SDK/NDK ใน sandbox
-- **ตรวจพบ**: `cmake`, `ninja`, `java`, `gradle`, `adb` ไม่พบในเครื่องนี้ (อ้างอิง PR #2 และสภาพ sandbox ปัจจุบัน).
-- **Workaround**: ใช้ GitHub Actions (เคยเขียวใน upstream). Local build ทำไม่ได้
-- **ต้องการ**: ถ้าต้องทดสอบ device จริง ผู้ใช้ต้องติดตั้ง APK และรายงานผล
+### B2 — CI-only build (อนุมัติ 2026-11-25)
+- Sandbox ไม่มี `cmake`, `ninja`, `java`, `gradle`, `adb` (ตรวจแล้ว). ยอมรับ CI-only build; device test โดยผู้ใช้.
 
-### B3 — ไม่มี Live EP7 Server + MSSQL
-- **ผลกระทบ**: Thai login/protocol verify ได้แค่ offline/unit-test/vector; ไม่สามารถยืนยัน live interoperability
-- **ทางเลือก**: ให้ test endpoint+credentials ผ่านช่องทางปลอดภัยที่เหมาะสม, หรือยอมรับ offline verification + capture checklist สำหรับ Phase 6
+### B3 — Offline protocol verification (อนุมัติ 2026-11-25)
+- ไม่มี live server/บัญชีทดสอบในรอบนี้. ใช้ offline test vectors + capture checklist แทน; ห้าม claim live compatibility.
 
-### B4 — RanLogic* ไม่มีใน upstream
-- **ข้อเท็จจริง**: `RanLogic/`, `RanLogicClient/`, `RanLogicServer/` ไม่มีใน `famoh01/ran-online-ep7` ตาม PR #2 audit.
-- **ผลกระทบ**: Phase 4 ทำได้เต็มที่เฉพาะ protocol/auth/session layer ที่จำเป็นต่อ mobile; gameplay logic ฝั่ง server ต้องมี source เพิ่ม
-- **ต้องการ**: ผู้ใช้ระบุขอบเขต Phase 4 ว่า protocol/auth เพียงพอหรือไม่ หรือจัดหา RanLogic source
+### B4 — Phase 4 scope จำกัด (อนุมัติ 2026-11-25)
+- จำกัด Phase 4 เฉพาะ protocol/auth compatibility layer ที่ mobile client ต้องใช้. ไม่ทำ full RanLogic porting.
 
-### B5 — Release keystore
-- ไม่มี `.jks`/credentials ใน repo; ไม่สร้างแทน. CI ออก debug/unsigned ได้
+### B6 — ไฟล์เสริม (อนุมัติ 2026-11-25, partial)
+- **ThaiPack** `RAN-EP7-ThaiPack-FamHawaii.zip` (1.36MB): นำเข้าแล้วที่ `RANMobile/Data/External/RAN-EP7-ThaiPack-FamHawaii.zip` และแตกที่ `RANMobile/Data/External/ThaiPack/` (1046 files). แหล่งที่ใช้จริง: Google Drive file `1IL8jlmvl5PGGHdaf5nlnoZdBMhTu25Ag` เพราะ release-assets host ถูกบล็อก.
+- **ServerDBTools** 49.8MB: ยังนำเข้าไม่ได้ (B6a).
+- **Client-TH big parts**: ไม่ดึงตามคำสั่ง.
 
-### B6 — แหล่งไฟล์ใหญ่
-- `RAN-EP7-Client-TH.zip.part00/01` ใหญ่เกินกว่าจะดึงแบบสะดวก; release-assets host มีข้อจำกัด. Repo สำรองมี source+compiled tools แต่ไม่ใช่ client asset เต็มชุดเดียวกัน
-- **ต้องการ**: ผู้ใช้ชี้ไฟล์เฉพาะที่ต้องใช้และวิธีส่งที่เข้าถึงได้
+## Blocker ใหม่ที่พบระหว่างรอบนี้
 
-### B7 — Asset-dependent tests
-- `RANMobile/Tests/test_main.cpp` ใน PR #2 เคย abort เมื่อไม่มี `external/ep7_release/thaipack_original`.
-- **Workaround**: แยก suite เป็น core vs asset-opt-in ใน Phase 6
+### B6a — ServerDBTools download blocked by sandbox/network path
+- **สถานะ:** OPEN
+- **สิ่งที่พยายาม:**
+  1. `gh release download ... --pattern RAN-EP7-ServerDBTools.zip` → EOF จาก `release-assets.githubusercontent.com`
+  2. `gh api repos/.../releases/assets/770908216 -H "Accept: application/octet-stream"` → redirect ไป `release-assets.githubusercontent.com` แล้ว EOF
+  3. `google_drive.download_file(file_id=1YZdc1OqAe8rpEfBZ6j_kb9YarLZSZtrO)` → "Could not retrieve the file from the connector"
+- **ผลกระทบ:** Phase 4 schema reference ยังไม่มีไฟล์จริงใน workspace (ไม่บล็อก Phase 2/3.4 offline)
+- **ต้องการจากผู้ใช้:** อัปโหลด `RAN-EP7-ServerDBTools.zip` เข้า workspace หรือให้ path ที่เข้าถึงได้; หรือยืนยันให้ใช้ schema/reference จาก repo สำรอง `matheomedrana/Ran-Online-EP7-Complete-Files` ที่มี server cfg/binaries source tree แทนชั่วคราว
 
-## สิ่งที่ทำได้ต่อโดยไม่ติด blocker (หลังมี code baseline)
+## Conflict/import log
 
-- นำ RANMobile baseline จาก PR #2 มาวางบน branch ปัจจุบันอย่างเป็นระเบียบ (docs/code) เพื่อทำงานต่อ
-- ตรวจ/รักษา protocol correctness (2079/TEA/56B/reassembly/heartbeat) ด้วย offline tests
-- ออกแบบ Login UI ใหม่แบบ procedural/vector (ถ้าผู้ใช้ยืนยัน B1 ทางเลือก B)
-- เตรียม CI/workflow และ testing checklist
-
-**หยุดรอคำสั่งผู้ใช้หลังรายงาน Phase 1** — โดยเฉพาะ B1 (asset/procedural UI) และทิศทางการนำ baseline PR #2 เข้ามาใน branch ปัจจุบัน
+- ระหว่าง import baseline PR #2: พบ add/add conflict ที่คาดได้ 3 ไฟล์ (`ARCHITECTURE.md`, `BLOCKERS.md`, `README.md`).
+- วิธีจัดการแบบโปร่งใส: commit Phase 1 docs ก่อน, แล้ว `git checkout FETCH_HEAD -- .` และ restore `ARCHITECTURE.md`/`BLOCKERS.md` จาก HEAD ของ branch นี้; `README.md` ใช้จาก PR #2 baseline. บันทึกไว้ใน commit message `c765f53`. ไม่มีการเลือกข้างเงียบๆ สำหรับเนื้อหา protocol/code; code ทั้งหมดมาจาก PR #2 ตรงๆ.

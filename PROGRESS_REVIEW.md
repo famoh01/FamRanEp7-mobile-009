@@ -1,206 +1,154 @@
-# PROGRESS_REVIEW.md — ตรวจสอบงานเดิม (Phase 2)
+# PROGRESS_REVIEW.md — RAN Online EP7 · PC → Mobile (Android)
 
-> Repo งาน: `famoh01/FamRanEp7-mobile-009` · branch `arena/afe528ba-famranep7-mobile-009`
-> ตรวจงานเดิมจาก: `famoh01/ran-online-ep7` — PR #1, PR #2 (ทั้งคู่ MERGED), branch `arena/6c988b52-ran-online-ep7`
-> วิธีตรวจ: clone ซอร์สจริง, **compile ด้วย g++ เอง**, รัน test, grep ground truth เทียบทีละ struct/opcode
-> ใช้คู่กับ `ARCHITECTURE.md` (Phase 1)
+> **Phase 2 deliverable** (ตรวจสอบงานเดิม + สถานะ baseline หลัง consolidate)
+> Repo: `famoh01/FamRanEp7-mobile-009`
+> Branch: `arena/7d98df66-famranep7-mobile-009` (HEAD หลัง baseline import)
+> Baseline import source: PR #2 `arena/afe528ba-famranep7-mobile-009` @ `f506d9547e71f1f45eaa7eb9a26ba81948bcd644`
+> วันที่รีวิว: 2026-11-25
 
 ---
 
-## 1. สรุปคำตัดสิน (verdict)
+## 1) สรุปผู้บริหาร
 
-| คำถาม | คำตอบ |
+| หัวข้อ | สรุป |
 |---|---|
-| งานเดิมมีจริงและใช้ต่อได้ไหม | **ใช่** — `RANMobile/` 4,434 LOC, compile ผ่าน `-Wall -Wextra -Werror`, CI เขียว, APK build ได้ |
-| ต้องเริ่มใหม่ทั้งหมดไหม | **ไม่ต้อง** — per Master Command ข้อ "ห้ามเริ่มใหม่ทั้งหมด" เราจะต่อยอดจากของเดิม |
-| งานเดิม "สมบูรณ์" ไหม | **ไม่** — engine/UI มีโครงครบ แต่ **ต่อ server จริงไม่ได้** (protocol ผิด) และ **ยัง render เกมไม่ได้** (มีแต่ UI) |
-| ตัวเลขที่งานเดิมรายงานไว้ เชื่อได้ไหม | **ตัวเลข build/CI เชื่อได้** แต่ **ข้อความ "SOURCE VERIFIED / LOCAL TESTED" ของ protocol ไม่จริง** (§4) |
+| Baseline ที่ใช้ต่อ | **PR #2 ของ repo นี้** (`arena/afe528ba-famranep7-mobile-009`) — advance ที่สุด (protocol fix + tests + docs) ถูก import เข้ามาใน branch ปัจจุบันแล้ว |
+| วิธี import | Tree checkout จาก `FETCH_HEAD` ของ PR #2 (หลีกเลี่ยง add/add conflict บน `ARCHITECTURE.md`/`BLOCKERS.md` ที่สร้างใน Phase 1 ของ branch นี้) + commit attribution ชัดเจน (`c765f53`) |
+| Protocol regression | **ไม่ถดถอย** — `ranmobile_protocol_tests` และ `ranmobile_stream_tests` compile clean (`-Wall -Wextra -Werror`) และ **PASS ทั้งหมด** (ดู §3) |
+| ความสมบูรณ์ภาพรวม | Engine/UI scaffold มีมาก, protocol core แก้แล้วระดับ offline, แต่ **ยังไม่ถึง playable game**: ไม่มี mesh/map renderer, input ไม่ผูก gameplay/network, character select ไม่มีหน้าจอวาด, Login UI ยังไม่ถึงเกณฑ์ Phase 5 |
+| ความเสี่ยงสูงสุด | P0: mesh/map rendering pipeline ยังไม่มี; P0: protocol ยังไม่ยืนยันกับ live server จริง (offline only ตาม B3); P1: Android IME/inset + touch→gameplay binding |
 
 ---
 
-## 2. สิ่งที่งานเดิมทำสำเร็จ (ของจริง — ผ่านการตรวจ)
+## 2) Baseline Consolidation (Step 1)
 
-### 2.1 Build & CI — ✅ พิสูจน์แล้ว
+### 2.1 สิ่งที่นำเข้า
 
-| หลักฐาน | ผล |
-|---|---|
-| `g++ -std=c++17 -Wall -Wextra -Werror` กับ 33 ไฟล์ใน `RANMobile/` | **ผ่าน 0 error 0 warning** |
-| `gh run list` run `45657604176` (workflow `Build RANMobile Android (ARM64)`) | **success** 3m31s |
-| artifacts ที่งานเดิมรายงาน | `app-debug.apk`, `libranmobile-arm64-v8a` — มีจริงตาม `ARTIFACT_MANIFEST.md` |
-| `RANMobile/CMakeLists.txt` | 3 targets, รองรับ Android NDK + Linux |
+- นำเข้าไฟล์จาก PR #2 ทั้งหมด **109 files, 11,266 insertions** (commit `c765f53`)
+- เก็บ `ARCHITECTURE.md`, `BLOCKERS.md` จาก Phase 1 ของ branch นี้ไว้ (จะอัปเดต Step 3/4) เพื่อหลีกเลี่ยง conflict และรักษาบริบท branch ปัจจุบัน
+- ไฟล์จาก PR #2 ที่อยู่ใน workspace ตอนนี้: `RANMobile/` ทั้งต้น, `PROGRESS_REVIEW.md` (ไฟล์นี้เขียนทับใหม่), `PROTOCOL_FIX_REPORT.md`, `README.md`, `UI_LOGIN_REDESIGN.md`
 
-### 2.2 สถาปัตยกรรม mobile — ✅ มีโครงครบและสะอาด
+### 2.2 ตารางผลทดสอบ Protocol (no regression)
 
-```
-RANMobile/Engine/     21 ไฟล์  1,417 LOC   MobileRenderer(GLES3) · ResourceManager · TouchSystem
-                                          MobileCamera · AnimationManager · AudioManager · NetworkClient
-RANMobile/UI/         17 ไฟล์    885 LOC   LoginScreen · VirtualJoystick · MobileButton · MobileSkillButton
-                                          MobileHUD · QuestUI · InventoryUI · SkillUI · MapUI · ChatUI · SettingsUI
-RANMobile/Data/       17 ไฟล์    835 LOC   EP7AssetImporter · EP7TextureDecoder · EP7WorldCharParser
-                                          RANMobileDataConverter · DataValidator · GameDataLoader · ThaiPackLoader
-RANMobile/Client/     20 ไฟล์    556 LOC   AuthenticationManager · CharacterSelectManager · CharacterController
-                                          TargetManager · CombatController · InventoryManager · QuestManager
-                                          MapManager · ChatManager · MonsterAdapter · NPCAdapter
-RANMobile/Android/     5 ไฟล์    235 LOC   AndroidManifest.xml · native_bridge.cpp · build.gradle
-RANMobile/Server/      2 ไฟล์    163 LOC   MobileServerHost (ใช้ทดสอบ protocol, ไม่ใช่ EP7 server จริง)
-RANMobile/Tests/       1 ไฟล์    308 LOC   15 test suites
-```
+Build env: `g++ (Debian 12.2.0-14) 12.2.0`, `-std=c++17 -O2 -Wall -Wextra -Werror -lpthread`, no cmake required.
 
-### 2.3 Rendering / Font — ✅ ใช้งานได้จริง
+| Test binary | Source | ครอบคลุม | ผล | หมายเหตุ |
+|---|---|---|---:|---|
+| `ranmobile_protocol_tests` | `Tests/test_protocol.cpp` | TEA key derivation; TEA encrypt/decrypt (5 cases); full THAI login packet roundtrip (56B, opcode 2079); struct field order (password before userid); 20-char truncation (StringCchCopy semantics) | **PASS** | Offline vectors; ไม่ต้องมี asset/server |
+| `ranmobile_stream_tests` | `Tests/test_stream.cpp` | TCP frame reassembly (split/bytewise/coalesced/trailing partial/invalid sizes/reset/1024B); heartbeat golden wire; agent key/rolling TEA; malformed sizes; reset; actual Poll fragmentation/callback size/immediate reply/no timer/EOF | **PASS** | Offline; รวม heartbeat/reassembly ตามที่ master command ระบุ |
 
-- `MobileRenderer` มี `DrawUIQuad`, `DrawUIText`, `MeasureTextWidth`, `UploadRGBA8Texture`, `DeleteTexture`, `IsBoxInFrustum`
-- ฟอนต์: `stb_truetype.h` + `DecodeUTF8` + glyph cache + Thai font fallback (ตรงกับที่งานเดิมอ้าง)
-- `EP7TextureDecoder`: ถอด `.mtf` (XOR `0x47`, diff `0x03`) และ `.dds` DXT1/DXT3/DXT5 → RGBA8
+**สรุปยืนยัน:** 2079 / TEA / 56B / reassembly / heartbeat = **ผ่านทั้งหมด, ไม่ถดถอย** จาก baseline PR #2
 
-### 2.4 Data layer — ✅ ไม่มีการกุข้อมูล (ตรงกฎเหล็กข้อ 1)
+### 2.3 ข้อจำกัดการทดสอบในรอบนี้
 
-- ไม่มี Monster/NPC/Item/Skill/Quest/Map ที่สร้างขึ้นเองใน `RANMobile/`
-- `MonsterAdapter`/`NPCAdapter` เป็น view-only (`GetState().globId`)
-- `DataValidator` + `RANMobileDataConverter` อ่านจากไฟล์ EP7 เท่านั้น
-
-### 2.5 Android packaging — ✅ พร้อมต่อยอด
-
-- `AndroidManifest.xml`: `minSdk` implied 24 / `targetSdk 34`, `glEsVersion 0x00030000`, `screenOrientation="landscape"`
-- `app/build.gradle`: `applicationId com.famhawaii.ranmobile`, `abiFilters arm64-v8a`, `externalNativeBuild` → `RANMobile/CMakeLists.txt`
+- ไม่ได้รัน `ranmobile_tests` (test_main.cpp) แบบเต็ม เพราะมี asset-dependent tests ที่เคย abort เมื่อไม่มี `external/ep7_release/thaipack_original` (B7 workaround ที่รับทราบไว้เดิม) — ไม่ได้แก้ test_main ในรอบนี้
+- ไม่มี Android SDK/NDK ใน sandbox (B2) — ไม่ได้ build APK
+- ไม่มี live EP7 server (B3) — ไม่ได้ยืนยัน interoperability จริง
 
 ---
 
-## 3. สิ่งที่งานเดิม **ยังไม่เสร็จ** (เรียงตามความรุนแรง)
+## 3) สถานะไฟล์/โมดูลใน `RANMobile/` (ประเมิน % พร้อมเหตุผล)
 
-| # | ช่องว่าง | หลักฐาน | ต้องทำใน Phase |
-|---|---|---|---|
-| **P0-1** | **Login protocol ผิดทั้งก้อน** — opcode, struct, การเข้ารหัส | ดู §4 ด้านล่าง | 3.4 |
-| **P0-2** | **ไม่มี mesh/map renderer** — `MobileRenderer` วาดได้แค่ quad/text/upload texture ไม่มี mesh pipeline, ไม่มี octree/world loading ที่ต่อเข้า `Draw` | `Engine/Renderer/MobileRenderer.h` มีแค่ 3 draw call | 3.1 / 3.3 |
-| **P0-3** | **`EP7WorldCharParser` ไม่ต่อเข้า renderer** — parser ผ่าน test แต่ไม่มีใครเรียกใช้ใน `DxGameStage`-equivalent | ไม่มี `#include EP7WorldCharParser` ใน `MobileRenderer.cpp`/`RANMobileEngine.cpp` | 3.3 |
-| **P1-1** | **ไม่มีหน้าจอ Character Select** — มีแต่ `CharacterSelectManager` (logic) ไม่มี draw | ไม่มีไฟล์ `UI/CharacterSelect/*` | 5 |
-| **P1-2** | **Input ไม่ผูกกับ gameplay** — `VirtualJoystick`/`TouchSystem` ไม่ได้ส่งไป `CharacterController` → network | ไม่มี call path joystick → net | 3.2 |
-| **P1-3** | **ไม่มี Java/Kotlin layer (0 ไฟล์)** — ใช้ `android.app.NativeActivity` ดิบ ⇒ คุม IME, window insets, edge-to-edge ยาก | `find RANMobile/Android -name "*.java" -o -name "*.kt" | wc -l` = **0** | 5 |
-| **P1-4** | **Login hit-box เป็นค่าคงที่ 1280×720** ⇒ กดไม่ตรงบนจอจริง (เช่น 2400×1080) | `LoginScreen.cpp` ใช้ `m_screenW * 0.46f` + offset คงที่ `110/170/230/300/365` | 5 |
-| **P1-5** | **ปุ่มไม่มี touch animation** (scale-down/fade) ตาม Phase 5 | `MobileButton` มีแค่ `m_pressed` bool ไม่มี state ต่อเวลา | 5 |
-| **P2-1** | Network รับ packet แบบไม่ครบ frame — `recv` ครั้งเดียว 4096, ตัดสินขนาดจาก 1 packet, ไม่มี partial/coalesced handling | `NetworkClient::Poll` | 3.4 |
-| **P2-2** | Heartbeat ส่ง `NET_MSG_HEARTBEAT_CLIENT_ANS` (161) เองทุก 15s แต่ **ไม่มี logic ตอบ `HEARTBEAT_CLIENT_REQ` ตามรอบ server** | `NetworkClient::Poll` | 3.4 |
-| **P2-3** | Test suite ต้องมี asset ภายนอก (`external/ep7_release/thaipack_original`) ⇒ **รันในเครื่องนี้ไม่ได้** (abort `test_main.cpp:186`) | รันจริงแล้ว abort | 6 |
-| **P2-4** | เอกสารงานเดิมหลายฉบับลงวันที่/commit ไม่ตรงกัน (เช่น `PROJECT_STATE.md` อ้าง `f520e60`, อีกฉบับอ้าง `0e711f8`) | เทียบหัวเอกสาร | 6 |
+> เกณฑ์ประเมิน: 0% ไม่มี, 25% มีโครง/สเกเลตัน, 50% ทำงานบางส่วน offline, 75% ใกล้ใช้งานจริงแต่ยังมี gap สำคัญ, 100% พร้อมใช้งานจริงครบ flow (ต้องผ่าน device/server ที่เกี่ยวข้อง)
 
----
-
-## 4. ★ การตรวจสอบ Protocol — จุดที่งานเดิม "อ้างว่า verified" แต่ **ไม่จริง**
-
-### 4.1 สิ่งที่งานเดิมประกาศไว้
-
-```cpp
-// RANMobile/Engine/Network/EP7Protocol.h  (งานเดิม)
-constexpr int32_t EP7_NET_MSG_BASE  = 0;                    // ← สมมติฐานที่ไม่มีในซอร์ส
-constexpr int32_t EP7_NET_MSG_LOBBY = EP7_NET_MSG_BASE + 1013;
-constexpr int32_t EP7_NET_MSG_LOGIN_2 = EP7_NET_MSG_LOBBY + 107;   // = 1120
-```
-
-```cpp
-// RANMobile/Tests/test_main.cpp:114-115  — test ที่ "ยืนยัน" ตัวเอง
-static_assert(RANMobile::EP7_NET_MSG_HEARTBEAT_CLIENT_ANS == 161, "Verified EP7 Heartbeat ID");
-static_assert(RANMobile::EP7_NET_MSG_LOGIN_2 == 1120,             "Verified EP7 Login ID");
-```
-
-และใช้ struct ผิดตัว:
-
-```cpp
-// RANMobile/Client/Login/AuthenticationManager.cpp:21-29
-EP7NetLoginData loginPkt;                       // ← เลียน NET_LOGIN_DATA (TW/HK path)
-std::strncpy(loginPkt.szUserid,   username.c_str(), EP7_USR_ID_LENGTH);
-std::strncpy(loginPkt.szPassword, password.c_str(), EP7_USR_PASS_LENGTH);
-return net->SendPacket(EP7_NET_MSG_LOGIN_2, payload, payloadSize);   // ← ไม่มี TEA
-```
-
-### 4.2 ความจริงจากซอร์ส (ground truth 4 ชั้น)
-
-| # | ชั้น | หลักฐาน | ผล |
-|---|---|---|---|
-| 1 | **opcode** | `s_NetGlobal.h:602-646` → TH base = **989**; `:639` `LOBBY = base+1013` = 2002 | `LOGIN_2` = **2109** ไม่ใช่ 1120 |
-| 2 | **path ที่ build ไทยใช้** | `Basic/Basic.cpp:71` `#ifdef TH_PARAM → EMSERVICE_THAILAND`; `LoginPage.cpp:228` `case EMSERVICE_THAILAND: ThaiSndLogin(...)` | ใช้ **`THAI_NET_MSG_LOGIN` = LOBBY+140 = 2142** ไม่ใช่ `LOGIN_2` |
-| 3 | **struct** | `s_NetGlobal.h:2260` `THAI_NET_LOGIN_DATA{ nmg; nChannel; szPassword[21]; szUserid[21]; }` | 54 ไบต์, **ลำดับ password ก่อน userid**, **ไม่มี** `szRandomPassword`/`szEnCrypt` |
-| 4 | **การเข้ารหัส** | `s_NetClientMsgLogin.cpp:305-307` `m_Tea.encrypt(szUserid,21)` / `(szPassword,21)`; server `s_CAgentServerMsgLogin.cpp:51` `m_Tea.decrypt(...)` | **ต้อง TEA** คีย์ `"Steven Seagal Neck Break"` (`minTea.cpp:20`), 16 ไบต์ |
-| 5 | **server dispatch** | `s_CAgentServerMsg.cpp:66` `case THAI_NET_MSG_LOGIN: ThaiMsgLogin(pMsg)` | server ไทย **ไม่มี** handler สำหรับ 1120 |
-
-### 4.3 ผลกระทบจริง
-
-ถ้าเอา mobile client ไปต่อ EP7 server ไทย:
-1. packet type 1120 → server **ไม่ match case ไหน** → ถูกทิ้ง/ตัดการเชื่อมต่อ
-2. แม้แก้ opcode เป็น 2142 แต่ struct ยังผิด (ขนาด 62 vs 54, ลำดับ field สลับ) → `Wrong Message Size` หรืออ่านขยะ
-3. แม้ struct ถูก แต่ไม่มี TEA → `m_Tea.decrypt` ได้ค่าเพี้ยน → login fail
-
-**สรุป: `SOURCE VERIFIED` ของ protocol ในงานเดิมคือ false positive** — test ที่เขียน (`static_assert == 1120`) ยืนยัน "ค่าที่ตัวเอง hardcode" ไม่ได้ยืนยันกับซอร์ส
-
-> หมายเหตุความเป็นธรรม: งานเดิมทำถูกในส่วน **heartbeat (160/161)** ซึ่งไม่ขึ้นกับ region — อันนั้น verified จริง
-
-### 4.4 หลักฐานประกอบ: framing ถูกต้องแล้ว
-
-จุดนี้ **ไม่ต้องแก้** — `NetworkClient::SendPacket` ใส่ header เองแล้ว และ server อ่าน `nmg->dwSize = sizeof(struct)`:
-```cpp
-// RANMobile/Engine/Network/NetworkClient.cpp:96-108
-std::vector<uint8_t> packet(sizeof(EP7NetMsgGeneric) + size);
-hdr->dwSize = packet.size();  hdr->nType = msgType;   // ✅ ถูก
-```
-```cpp
-// netclientLib/s_NetClient.cpp:827-831 — PC client ส่งทั้ง struct ตาม dwSize
-dwSize = nmg->dwSize;
-nSndBytes = ::send(m_sClient, (const char*) m_pBuffer, (int) dwSize, 0);
-```
+| โมดูล | ไฟล์หลัก | ประเมิน | เหตุผล | Gap สำคัญ |
+|---|---|---:|---|---|
+| **Engine/Core** | `Logger`, `RANMobileEngine` | 55% | มี engine loop/state/logging พื้นฐาน; ยังไม่ใช่ game loop ที่เชื่อมทุก subsystem ครบ | ผูก scene/stage, lifecycle จริง |
+| **Engine/Renderer (GLES3)** | `MobileRenderer`, `stb_truetype.h`, `GraphicsSettings` | 45% | มี quad/text/texture upload/frustum box; มี Thai font path; ไม่มี mesh/skinned mesh/map/octree draw | mesh pipeline, material/shader, map/world render (P0) |
+| **Engine/Resource** | `ResourceManager`, `ObjectPool` | 45% | มีโครง resource cache/pool; ยังไม่ผูก asset จริงครบ | asset streaming, ref lifetime กับ renderer |
+| **Engine/Touch** | `TouchSystem` | 50% | มี touch event handling พื้นฐาน | ผูก gesture → camera/gameplay/UI focus แบบครบ |
+| **Engine/Camera** | `MobileCamera` | 40% | มี camera พื้นฐาน | follow/lock-on/orbit mobile behavior, collide กับ world |
+| **Engine/Animation** | `AnimationManager` | 30% | โครงมี | ไม่มี skinned mesh pipeline ให้ขับจริง |
+| **Engine/Audio** | `AudioManager` | 20% | stub/โครง | OpenSL/AAudio, BGM/SFX จริง (ยังไม่ใช่ priority P0) |
+| **Engine/Network** | `EP7Protocol.h`, `EP7Tea`, `EP7Stream`, `NetworkClient` | 70% | Thai login opcode 2079, 56B ABI, TEA, TCP reassembly, heartbeat/rolling TEA มี tests ผ่าน; ส่ง packet ได้ | ยังไม่ยืนยัน live server (B3), ยังไม่ครอบคลุม packet ครบ gameplay flow, error/reconnect policy |
+| **Client/Login** | `AuthenticationManager` | 65% | สร้าง Thai login packet ถูกตาม baseline; ผูกกับ NetworkClient | live auth flow, login FB handling ครบ, error UX |
+| **Client/Character** | `CharacterSelectManager` | 35% | มี manager logic | **ไม่มี Character Select UI screen วาดจริง** |
+| **Client/Gameplay** | `CharacterController` | 30% | มีโครง controller | ไม่ผูก touch/joystick/network movement |
+| **Client/Combat** | `TargetManager`, `CombatController` | 25% | โครงพื้นฐาน | ยังไม่ผูกกับ server packets/input/HUD จริง |
+| **Client/Inventory/Quest/Chat/Map** | Managers + adapters | 25% | โครงและ data adapters | ไม่ผูก UI/data/server จริงครบ |
+| **UI/Login** | `LoginScreen` | 40% | มีหน้าจอ scaffold, input, submit callback; ใช้ procedural theme ได้บางส่วน | ไม่ผ่านเกณฑ์ Phase 5: responsive จริง, touch feedback/animation ครบ, keyboard inset robust, layout ไม่บัง IME, modern polish |
+| **UI/Components** | `UIButton`, `UIInputField` | 45% | มี component พื้นฐาน | touch feedback animation, min 48dp target enforcement, focus/IME behavior |
+| **UI/HUD/Joystick/Buttons** | `MobileHUD`, `VirtualJoystick`, `MobileButton`, `MobileSkillButton` | 45% | มี UI วาด/รับ touch พื้นฐาน | feedback animation, binding กับ gameplay, ขนาด/ตำแหน่ง responsive |
+| **UI อื่นๆ** | `InventoryUI.h`, `SkillUI.h`, `QuestUI.cpp`, `MapUI.h`, `ChatUI.h`, `SettingsUI.h` | 20-30% | ส่วนใหญ่ header/stub/beginning | ต้องผูก data + renderer + input จริง |
+| **Data/Importer+Loader** | `EP7AssetImporter`, `EP7TextureDecoder`, `EP7WorldCharParser`, `GameDataLoader`, `ThaiPackLoader`, `RANMobileDataConverter`, `DataValidator` | 50% | มี parser/decoder/loader/converter/validator โครงสำคัญ; ThaiPack นำเข้ามาแล้วใน workspace | ยังไม่ต่อเข้ากับ renderer/runtime จริง, ไม่ยืนยันกับ asset ชุดเต็ม |
+| **Android** | `AndroidManifest`, `native_bridge.cpp`, gradle/CMake | 55% | มีโครง NativeActivity/GLES3/ABI arm64-v8a | ไม่มี Java/Kotlin layer สำหรับ IME/insets, ต้อง verify CI/device |
+| **Tests** | `test_main`, `test_protocol`, `test_stream` | 60% | protocol/stream offline ผ่าน; test_main มีครอบคลุมกว้างแต่พึ่ง asset บางส่วน | แยก asset-dependent tests (B7), เพิ่ม regression tests สำหรับ UI layout/input logic ได้ |
+| **Server (mobile mock)** | `MobileServerHost` | 30% | mock/test only | ห้ามใช้แทน EP7 server จริง; ใช้ได้แค่ dev/test |
 
 ---
 
-## 5. ตารางสถานะตามจริง (แทนตารางใน `PROJECT_STATE.md` ของงานเดิม)
+## 4) เปรียบเทียบ PR / Baseline
 
-| ระบบ | SOURCE VERIFIED | CODE | LOCAL TEST (เครื่องนี้) | DEVICE | LIVE SERVER |
+### 4.1 Repo นี้ (`famoh01/FamRanEp7-mobile-009`)
+
+| PR | Branch | สถานะ | จุดเด่น | จุดอ่อน/ซ้ำ | การตัดสิน |
+|---:|---|---|---|---|---|
+| #1 | `arena/f23bb3f3-famranep7-mobile-009` | DRAFT | มี snapshot แรกสุด, มี UI screens บางส่วน (Login/Joystick/Quest/Settings/Skill/Map headers) | ไม่มี protocol fixes ชุดหลัง (2079/TEA/56B/stream/heartbeat tests), เอกสารเก่า | ใช้เป็น reference เท่านั้น |
+| #2 | `arena/afe528ba-famranep7-mobile-009` | DRAFT | **ครบสุด**: docs + RANMobile + protocol fix (2079, TEA, 56B native ABI) + frame reassembly + heartbeat + test_protocol/test_stream + UI components | ยังมี gap เกมจริง (render/input binding) เหมือนที่รีวิวไว้ | **เลือกเป็น baseline** |
+| #3 | `arena/dff8b152-famranep7-mobile-009` | DRAFT | consolidate docs/baseline | file set ใกล้ PR #2; ไม่ได้เหนือกว่า PR #2 ในเชิง protocol/test ที่ตรวจพบ | ไม่ใช้แทน PR #2 |
+
+### 4.2 Upstream (`famoh01/ran-online-ep7`)
+
+| PR | Branch | สถานะ | สาระ | ความสัมพันธ์ |
+|---:|---|---|---|---|
+| #1 | `arena/83858354-ran-online-ep7` | MERGED | RAN Online EP7 — FAM HAWAII Mobile Client & Engine (Phases 1–31) | งานตั้งต้น mobile ใน upstream |
+| #2 | `arena/6c988b52-ran-online-ep7` | MERGED | RANMobileEngine, GLES3 Thai Font, Login UI, Android APK/AAB | งานที่ master command ระบุให้ตรวจ; เป็นรากของงานที่ไหลมาสู่ repo นี้ |
+
+**สรุป baseline:** ใช้ **PR #2 ของ repo นี้** เป็น code baseline ปฏิบัติจริง เพราะมี protocol fixes/tests ล่าสุด; upstream PR #1/#2 ใช้เป็น historical/reference และยืนยันว่า mobile work มีรากใน upstream แล้ว ไม่ใช่งานเริ่มใหม่
+
+---
+
+## 5) Gap Analysis — Phase 3.1-3.4 ที่เหลือ
+
+| Phase | Gap | สถานะปัจจุบัน | งานที่ต้องทำ | Dependency | ความเสี่ยง |
 |---|---|---|---|---|---|
-| Heartbeat 160/161 | ✅ | ✅ | ✅ (161 ตรง) | — | ❌ |
-| **Thai Login (2142 + TEA)** | ✅ (ตรวจใหม่) | ❌ **ผิด** | ❌ | ❌ | ❌ |
-| Packet framing (`dwSize`) | ✅ | ✅ | ✅ | — | ❌ |
-| GLES3 UI quad/text | n/a | ✅ | ✅ compile | ⚠️ ตามงานเดิม | — |
-| Thai font (UTF-8) | n/a | ✅ | ✅ | ⚠️ ตามงานเดิม | — |
-| Texture decode (.mtf/.dds) | ✅ | ✅ | ✅ unit test | ❌ | — |
-| World/Char parser (.wld/.chf/.cps) | ✅ | ✅ | ✅ unit test | ❌ (ไม่ต่อ renderer) | — |
-| Mesh/Map render | — | ❌ **ไม่มี** | ❌ | ❌ | ❌ |
-| Character Select UI | ✅ (PC) | ❌ **ไม่มี** | ❌ | ❌ | ❌ |
-| HUD / Joystick | ✅ (PC) | ✅ | ✅ | ❌ | ❌ |
-| Movement → server | ✅ (PC) | ❌ ไม่ผูก | ❌ | ❌ | ❌ |
-| Server (Login/Agent/Field) | ✅ | ✅ (Win32) | ❌ build ไม่ได้บน Linux | — | ❌ |
-| Android APK | n/a | ✅ | ✅ CI | ⚠️ | — |
+| **3.1 Rendering (DX9→GLES3)** | ไม่มี mesh/skinned/model/map renderer | มี quad/text/texture upload เท่านั้น | ออกแบบ render pipeline สำหรับ static/skinned mesh, material/texture bind, camera/frustum/culling, map chunk/octree draw; เชื่อม EP7 parsers/decoders | Data parsers/decoders, asset format จริง, test assets | **สูงมาก** - เป็นคอขวดทำให้เกม "มองเห็น" ไม่ได้ |
+| **3.2 Input (Mouse/KB→Touch)** | Touch/joystick ไม่ผูก gameplay | มี TouchSystem/VirtualJoystick events แต่ไม่ขับ CharacterController/network | Mapping gesture/joystick/button → movement/action/camera; ป้องกัน touch conflict; ผูกกับ network movement packets ที่ตรงโปรโตคอล | 3.1 บางส่วนเพื่อเห็นผล, protocol packets movement | **สูง** - เล่นไม่ได้แม้ render ได้ |
+| **3.3 Asset pipeline** | parser/decoder ยังไม่ end-to-end กับ renderer/runtime | มี `EP7TextureDecoder`, `EP7WorldCharParser`, `EP7AssetImporter`, `ThaiPackLoader` | สร้าง asset manifest/load path, cache, texture/material binding, world/object spawn จากข้อมูลจริง; ห้ามกุข้อมูลเกม | asset ตัวอย่างที่มีสิทธิ์/อนุญาต, renderer | **สูง** - เสี่ยง memory/perf บนมือถือ; asset ต้นฉบับหายาก |
+| **3.4 Network protocol layer** | Offline ถูกแล้ว แต่ยังไม่ครบ flow + ไม่ live-verified | 2079/TEA/56B/reassembly/heartbeat ผ่าน tests | เพิ่ม packet coverage ที่จำเป็นต่อ login→char select→enter world (ตามโปรโตคอลเดิมเท่านั้น), เพิ่ม regression tests, ทำ capture checklist; ไม่แต่ง packet | B3 live server/capture (ยังไม่มี) | **กลาง-สูง** - offline ผ่านแต่ live อาจเจอ ABI/flow edge cases |
 
-**สรุปภาพรวม: UI + data plumbing ≈ 60% · network protocol ≈ 15% (หลังหัก login ที่ผิด) · gameplay render ≈ 0% · server compat ≈ 10%**
+### 5.1 ลำดับที่แนะนำสำหรับ Phase 3 (ข้อเสนอ)
+
+1. **3.4 hardening (offline) + test harness** — ทำได้ทันทีใน sandbox, ลดความเสี่ยงถดถอย protocol; เพิ่ม tests เฉพาะ behavior ที่ยืนยันจาก source.
+2. **3.2 input binding แบบจำกัด** — ผูก joystick/button events เข้ากับ controller state machine โดยไม่เปลี่ยน protocol payload semantics.
+3. **3.3 asset pipeline แบบ vertical slice** — เลือก asset ชุดเล็กที่อนุญาต/มีอยู่ (หรือ procedural placeholder สำหรับ UI only) เพื่อพิสูจน์ decode→upload→draw path.
+4. **3.1 mesh/map renderer** — งานหนักสุด; ต้องแตกเป็น PR ย่อยเล็กๆ (texture/material, static mesh, skinned mesh, map chunk).
+
+> หมายเหตุ: ลำดับนี้เป็นข้อเสนอทางวิศวกรรมเพื่อคุมความเสี่ยง; ต้องรอคำสั่งผู้ใช้ก่อนเริ่ม Phase 3.
 
 ---
 
-## 6. แผนดำเนินการต่อ (ปรับลำดับจาก Master Command — พร้อมเหตุผล)
+## 6) ความเสี่ยง (เรียงความสำคัญ)
 
-Master Command สั่ง 3.1 → 3.2 → 3.3 → 3.4 แต่ผมเสนอ **สลับ 3.4 ขึ้นก่อน** เพราะ:
-
-- 3.4 (protocol) **พิสูจน์ได้ 100% ด้วย unit test + test vector** โดยไม่ต้องมี device/server/asset
-  → ได้ "หลักประกันว่าไม่แต่งข้อมูล" ที่ตรวจสอบได้จริง ตรงกฎเหล็กข้อ 2
-- 3.1 (renderer) ต้องมี asset ก่อน ซึ่ง **ติด blocker** (ดู `BLOCKERS.md`)
-- ทำ 3.4 ก่อน = ได้ผลลัพธ์ที่ merge ได้ทันที ไม่ต้องรอผู้ใช้
-
-| ลำดับ | งาน | ต้องมี blocker ไหม |
-|---|---|---|
-| **A** | Phase 3.4 — `ThaiLoginProtocol` (opcode 2142, `THAI_NET_LOGIN_DATA` 54B, TEA) + test vector | ❌ ไม่ต้อง |
-| **B** | Phase 3.4 — แก้ `NetworkClient` frame reassembly + heartbeat ตามรอบ | ❌ ไม่ต้อง |
-| **C** | Phase 5 — Login UI redesign (responsive + touch feedback + keyboard inset) | ⚠️ ต้องการ asset ต้นฉบับ (§7 ของ `BLOCKERS.md`) — เริ่มด้วย procedural ได้ |
-| **D** | Phase 3.1/3.3 — mesh pipeline + asset pipeline | ✅ **ติด blocker** (asset + device) |
-| **E** | Phase 4 — server compat | ✅ **ติด blocker** (`RanLogic*` ไม่มีใน repo) |
-| **F** | Phase 6 — build/test pipeline | ❌ ทำได้ (CI) |
+| ลำดับ | ความเสี่ยง | ผลกระทบ | โอกาสเกิด | บรรเทา |
+|---:|---|---|---|---|
+| R1 | **ไม่มี mesh/map renderer** | เกมไม่สามารถแสดงฉาก/ตัวละครจริง | สูงมาก (ยังไม่มี) | แตกงาน 3.1 เป็น vertical slice; เริ่มจาก static mesh + texture + camera |
+| R2 | **Protocol live incompatibility** แม้ offline tests ผ่าน | ต่อ server จริงไม่ได้/หลุด | กลาง | รักษา offline vectors; ทำ capture checklist; ห้ามเดา ABI เพิ่ม |
+| R3 | **ไม่มี asset ต้นฉบับครบ** | ทดสอบ 3.1/3.3/5 ไม่สมจริง | สูง | ใช้ procedural/vector สำหรับ UI (B1 อนุมัติแล้ว); ขอ asset เฉพาะที่จำเป็น; ไม่ใช้ asset ไม่มีสิทธิ์ |
+| R4 | **IME/keyboard inset บน Android** (ไม่มี Java/Kotlin layer) | Login/Chat พิมพ์ไม่ได้จริงบน device | กลาง-สูง | วางแผน native bridge/Insets API; ทดสอบบน device จริงโดยผู้ใช้ (B2) |
+| R5 | **Touch→gameplay binding ผิด/ไม่ครบ** | ควบคุมไม่ได้ | กลาง | ทำ input state machine + unit tests สำหรับ mapping; แยก UI touch จาก world touch |
+| R6 | **Performance/memory บนมือถือ** | crash/lag | กลาง | budget texture/mesh, object pool, profiling checklist ใน Phase 6 |
+| R7 | **Server scope creep (B4)** | งาน Phase 4 บานปลายเกิน protocol/auth | กลาง | ยึดขอบเขตที่อนุมัติ: protocol/auth compatibility เท่านั้น |
+| R8 | **Regression จากการ import baseline** | ฟีเจอร์เดิมพัง | ต่ำ (ลดแล้ว) | protocol/stream tests ผ่านแล้ว; เพิ่ม CI และแยก asset tests |
 
 ---
 
-## 7. ข้อผิดพลาดเล็กๆ ที่ควรแก้ระหว่างทาง
+## 7) B6 — ไฟล์เสริมที่ดึงมาในรอบนี้
 
-1. `EP7_USR_RAND_PASS_LENGTH` / `EP7_ENCRYPT_KEY` ใน `EP7Protocol.h` **ไม่ถูกใช้ใน path ไทย** → เก็บไว้เพื่อ path TW/HK ได้ แต่ต้องไม่หลุดเข้า struct ไทย
-2. `MobileButton::IsClicked()` เป็น latch — ไม่มี `ConsumeClick()` ⇒ เสี่ยง click ซ้ำ (ควรมี consume semantics)
-3. `LoginScreen::HandleTouchDown` รับ `m_activePointerId` แต่ไม่ใช้ตรวจ pointer ที่ขึ้น → multi-touch อาจค้าง focus
-4. `MobileServerHost` ตอบ heartbeat ด้วย `HEARTBEAT_CLIENT_ANS` (161) กลับไป — ผิดทิศ (161 คือ client→server) ใช้ทดสอบภายในได้ แต่ห้ามใช้เป็นตัวอ้างอิง protocol
-5. เอกสารงานเดิม: `PROJECT_STATE.md` / `PROJECT_STATUS.md` / `STEP_PROGRESS.md` อ้าง commit ต่างกัน — ควรมีเอกสารสถานะเดียว (เราใช้ `ARCHITECTURE.md` + `PROGRESS_REVIEW.md` + `BLOCKERS.md` แทน)
+| ไฟล์ | แหล่ง | ขนาด | สถานะ | การใช้งาน | หมายเหตุ |
+|---|---|---:|---|---|---|
+| `RAN-EP7-ThaiPack-FamHawaii.zip` (1.36MB) | Google Drive folder `1Y3VOeAeBzSbaB_o9oWLN16qD29b8Ro1m` (file id `1IL8jlmvl5PGGHdaf5nlnoZdBMhTu25Ag`) — fallback เพราะ release-assets host ถูกบล็อก | 1,359,185 bytes | **นำเข้าแล้ว** | แตกไว้ที่ `RANMobile/Data/External/ThaiPack/` (1046 files: `data/glogic/npctalk/*.ntk`, `data/gui/gameword_th.txt`, `gameintext_th.txt`, `gameextext_th.txt`); ใช้เป็น reference สำหรับ Thai text/font/rendering work ที่ค้าง | ไม่มี .ttf/.otf ใน zip นี้; เป็น Thai text/npctalk/gui text pack |
+| `RAN-EP7-ServerDBTools.zip` (49.8MB) | Release `ran-ep7-full-v1` / Drive | 49,791,515 bytes | **ยังไม่ได้นำเข้า** | เป้าหมาย: schema reference สำหรับ Phase 4 (ดูอย่างเดียว, ไม่รัน) | ดาวน์โหลดผ่าน release-assets ถูกบล็อก (EOF), `gh api` redirect ไป release-assets ก็ถูกบล็อก, google_drive connector `download_file` รายงาน "Could not retrieve..." — บันทึกใน BLOCKERS.md |
 
 ---
 
-## 8. ส่งต่อ Phase 3
+## 8) คำแนะนำก่อนเริ่ม Phase 3 (รอคำสั่งผู้ใช้)
 
-พร้อมเริ่ม **Phase 3.4** ทันที (งาน A) — ไม่ติด blocker
-รายละเอียด blocker ทั้งหมดอยู่ใน `BLOCKERS.md` และต้องรอคำสั่งผู้ใช้ก่อนไป 3.1/4
+**ควรเริ่ม Phase 3 จาก 3.4 hardening (offline) ก่อน** เพราะ:
+- ทำได้ทันทีใน sandbox, ไม่มี blocker ใหม่
+- รักษา protocol correctness ที่เป็นกฎเหล็กข้อ 2
+- สร้าง regression tests เพิ่มก่อนแตะ renderer/input ที่เสี่ยงสูง
+
+จากนั้นค่อยทำ **3.2 input binding** (vertical slice เล็กๆ) และ **3.1/3.3** แบบแบ่ง PR ย่อย โดยเฉพาะ 3.1 ต้องมีแผน asset/mesh scope ชัดเจนก่อนเริ่มเขียน renderer ใหญ่.
+
+**ห้ามเริ่ม Phase 3/5 ในรอบนี้ตามคำสั่ง master command — หยุดรอคำสั่งถัดไป**

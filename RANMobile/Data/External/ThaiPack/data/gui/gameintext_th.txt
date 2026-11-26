@@ -1,0 +1,1013 @@
+/////////////////////////////////////////////////////////////////////////////
+VERSION,1
+//
+SENTENSE,CLOSE_GAME,1
+คุณต้องการออกจากเกมหรือไม่?
+SENTENSE,PLAYINTERFACE_2,1
+คุณต้องการเปิดเมนูตั้งค่าระบบหรือไม่?
+SENTENSE,PLAYINTERFACE_3,1
+คุณต้องการไปยังเมนูเลือกเซิร์ฟเวอร์หรือไม่?
+SENTENSE,PLAYINTERFACE_4,1
+คุณต้องการไปยังเมนูเลือกตัวละครหรือไม่?
+SENTENSE,PLAYINTERFACE_5,2
+ขาดการเชื่อมต่อจากเซิร์ฟเวอร์!
+คุณต้องการออกจากเกมหรือไม่?
+WORD,PLAYINTERFACE_6,1
+กรอกจำนวนผิดพลาด!
+WORD,PLAYER_REBIRTH,1
+คุณต้องการคืนชีพหรือไม่?
+SENTENSE,REBIRTH_DIALOGUE_TEXT,1
+คุณต้องการคืนชีพหรือไม่?
+SENTENSE,PLAYINTERFACE_8,2
+มีผู้เล่นอื่นกำลังเชื่อมต่อด้วย ID เดียวกัน!
+จบเกม
+WORD,PLAYINTERFACE_9,1
+ขาดการเชื่อมต่อเนื่องจากข้อผิดพลาด
+WORD,PLAYINTERFACE_10,1
+ไอเทมหายไป!
+WORD,PLAYINTERFACE_11,1
+เงินหายไป!
+WORD,PLAYINTERFACE_12,1
+ยังไม่ได้รับความเป็นเจ้าของไอเทม!
+WORD,PLAYINTERFACE_13,1
+ช่องเก็บของเต็ม!
+WORD,PLAYINTERFACE_14,1
+อนุญาตให้มีไอเทมกิจกรรมได้ 1 ชิ้นเท่านั้น
+SENTENSE,MONEYTO_FIELD,1
+กรุณากรอกจำนวนเงินที่ต้องการทิ้ง
+WORD,PLAYINTERFACE_15,1
+กรุณากรอกจำนวนเงินที่ต้องการฝาก
+WORD,PLAYINTERFACE_16,1
+กรุณากรอกจำนวนเงินที่ต้องการถอน
+WORD,PLAYINTERFACE_17,1
+เรียนรู้สำเร็จ!
+WORD,PLAYINTERFACE_18,1
+ไม่สามารถเลเวลอัปได้!
+WORD,PLAYINTERFACE_19,1
+เงื่อนไขไม่ตรง! ไม่สามารถเลเวลอัปได้!
+WORD,PLAYINTERFACE_20,1
+ไม่สามารถเรียนได้เพราะคนละสาขา!
+WORD,PLAYINTERFACE_21,1
+สเตตัสที่ต้องการไม่ตรง!
+WORD,PLAYINTERFACE_22,1
+คุณเรียนสกิลนี้แล้ว
+WORD,PLAYINTERFACE_23,1
+.
+WORD,PLAYINTERFACE_24,1
+.
+WORD,PLAYINTERFACE_25,1
+.
+WORD,PLAYINTERFACE_26,1
+.
+WORD,PLAYINTERFACE_27,1
+.
+WORD,PLAYINTERFACE_28,1
+.
+WORD,PLAYINTERFACE_29,1s
+.
+WORD,PLAYINTERFACE_30,1
+กำลังโหลด...
+WORD,PLAYINTERFACE_31,1
+กรุณากรอกจำนวนเงินที่จะฝาก
+WORD,PLAYINTERFACE_32,1
+กรุณากรอกจำนวนเงินที่จะถอน
+WORD,TRADE_MONEY,1
+กรุณากรอกจำนวนเงินที่จะเทรด
+SENTENSE,PARTY_TAR,1
+คุณต้องการเข้าร่วมปาร์ตี้กับ '%s' หรือไม่?
+SENTENSE,TRADE_TAR,1
+คุณต้องการเทรดกับ '%s' หรือไม่?
+WORD,NOT_READY_CONTROL,1
+กำลังโหลด...
+WORD,CHAT_PRIVATE_FAIL,1
+ไม่สามารถส่งข้อความถึง '%s' ได้
+WORD,PARTY_LURE_REFUSE,1
+'%s' ปฏิเสธคำเชิญเข้าปาร์ตี้
+WORD,PARTY_LURE_REFUSE_AUTO,1
+ปฏิเสธคำเชิญเข้าปาร์ตี้จาก '%s' โดยอัตโนมัติ
+WORD,PARTY_LURE_FULL,1
+ปาร์ตี้เต็ม! ไม่สามารถเข้าปาร์ตี้ของ '%s' ได้
+WORD,PARTY_LURE_OTHER,1
+'%s' เข้าปาร์ตี้อื่นแล้ว
+WORD,PARTY_MBR_PICKUP_BRD,1
+'%s' ได้รับไอเทม '%s'
+WORD,TRADE_FB_CANCEL,1
+'%s' ปฏิเสธคำขอเทรด
+WORD,TRADE_FB_CANCEL_AUTO,1
+'%s' ปฏิเสธคำขอเทรดโดยอัตโนมัติ
+WORD,TRADE_AGREE_TIME,1
+กรุณายืนยันเทรดอีกครั้งในภายหลัง
+WORD,TRADE_COMPLETE,1
+เทรดสำเร็จ!
+WORD,TRADE_CANCEL_NORMAL,1
+ยกเลิกเทรด!
+WORD,TRADE_CANCEL_OTHER,1
+อีกฝ่ายยกเลิกเทรดแล้ว
+WORD,TRADE_AGREE_FAIL_MYINVEN,1
+ไม่สามารถเทรดได้เพราะช่องเก็บของเต็ม
+WORD,TRADE_CANCEL_MYINVEN,1
+ช่องเก็บของของคุณไม่เพียงพอ!
+WORD,TRADE_CANCEL_TARINVEN,1
+ช่องเก็บของของคู่เทรดไม่เพียงพอ!
+SENTENSE,ITEMPUTON_ACCEPT_SP,1
+ไอเทมที่ใช้ขาดเงื่อนไขการติดตั้ง '%d'! ค่า SP จะเพิ่มขึ้นเมื่อใช้งาน
+SENTENSE,GRINDING_NOITEM,1
+ไม่สามารถอัปเกรดไอเทมนี้ได้
+SENTENSE,GRINDING_DEFCLASS,1
+ไม่สามารถอัปเกรดไอเทมนี้ด้วยวัตถุดิบนี้ได้
+SENTENSE,GRINDING_NOT_HIGH,1
+ต้องใช้ยาอัปเกรดระดับสูงเพื่ออัปเกรดต่อ
+SENTENSE,GRINDING_NOT_LOW,1
+ต้องใช้ยาอัปเกรดธรรมดาสำหรับไอเทมเลเวลปัจจุบัน
+SENTENSE,GRINDING_MAX,1
+ไอเทมนี้อัปเกรดไม่ได้อีกแล้ว
+SENTENSE,EMGRINDING_FAIL,1
+อัปเกรดล้มเหลว!
+SENTENSE,EMGRINDING_SUCCEED,1
+อัปเกรดสำเร็จ!
+SENTENSE,EMGRINDING_RESET,1
+อัปเกรดล้มเหลว! เลเวลและค่าของไอเทมกลับเป็น 0
+SENTENSE,DIS_EXP,1
+เสียแต้มประสบการณ์ '%d'
+SENTENSE,INC_EXP,1
+ได้รับแต้มประสบการณ์ '%d'
+SENTENSE,INC_LIVING,1
+ได้รับแต้มชีวิต '%d'
+SENTENSE,DIS_LIVING,1
+เสียแต้มชีวิต '%d'
+SENTENSE,INC_SKP,1
+ได้รับแต้มสกิล '%d'
+SENTENSE,DIS_SKP,1
+เสียแต้มสกิล '%d'
+SENTENSE,INC_BRIGHT,1
+ได้รับแต้ม Bright '%d'
+SENTENSE,DIS_BRIGHT,1
+เสียแต้ม Bright '%d'
+SENTENSE,INC_STATS,1
+ได้รับแต้มสเตตัส '%d'
+SENTENSE,DIS_STATS,1
+เสียแต้มสเตตัส '%d'
+SENTENSE,MAP_REQUIRE_FAIL,1
+เงื่อนไขไม่ตรง! ไม่สามารถย้ายไปยังพื้นที่ที่กำหนดได้
+SENTENSE,EMREQUIRE_LEVEL,1
+ต้องมีเลเวล '%d' %s เพื่อย้ายไปยังพื้นที่ที่กำหนด
+SENTENSE,EMREQUIRE_ITEM,1
+ต้องมีไอเทม '%s' เพื่อย้ายไปยังพื้นที่ที่กำหนด
+SENTENSE,EMREQUIRE_SKILL,1
+ต้องมีสกิล '%s' เพื่อย้ายไปยังพื้นที่ที่กำหนด
+SENTENSE,EMREQUIRE_LIVING,1
+ต้องมีแต้มชีวิต '%s' เพื่อย้ายไปยังพื้นที่ที่กำหนด
+SENTENSE,EMREQUIRE_BRIGHT,1
+ต้องมีแต้ม Bright '%s' เพื่อย้ายไปยังพื้นที่ที่กำหนด
+SENTENSE,EMREQUIRE_QUEST_COM,1
+ต้องทำเควส %s ให้สำเร็จเพื่อย้ายไปยังพื้นที่ที่กำหนด
+SENTENSE,EMREQUIRE_QUEST_ACT,1
+ย้ายไปยังพื้นที่ที่กำหนดได้เฉพาะตอนทำเควส %s เท่านั้น
+SENTENSE,EMSIGN_SAME,1
+เท่ากัน
+SENTENSE,EMSIGN_HIGHER,1
+เกิน
+SENTENSE,EMSIGN_LOWER,1
+ต่ำกว่า
+SENTENSE,EMSIGN_SAMEHIGHER,1
+สูงกว่าหรือเท่ากัน
+SENTENSE,EMSIGN_SAMELOWER,1
+ต่ำกว่าหรือเท่ากัน
+SENTENSE,EMSIGN_ALWAYS,1
+เสมอ
+SENTENSE,LEVELUP,1
+ยินดีด้วย! เลเวลอัปเป็นเลเวล '%d' แล้ว! คุณสามารถแจกแต้มสเตตัสใหม่ได้
+SENTENSE,EMCONFRONT_END_FAIL,1
+การดวลถูกยกเลิกเนื่องจากข้อผิดพลาด
+SENTENSE,EMCONFRONT_END_WIN,1
+คุณชนะการดวลกับ '%s'!
+SENTENSE,EMCONFRONT_END_LOSS,1
+คุณแพ้การดวลกับ '%s'!
+SENTENSE,EMCONFRONT_END_NOTWIN,1
+คุณไม่ได้มีส่วนร่วมในชัยชนะ
+SENTENSE,EMCONFRONT_END_PWIN,1
+ปาร์ตี้ของคุณชนะการดวล!
+SENTENSE,EMCONFRONT_END_PLOSS,1
+ปาร์ตี้ของคุณแพ้การดวล!
+SENTENSE,EMCONFRONT_END_PTIME,1
+หมดเวลา! การดวลปาร์ตี้สิ้นสุดแล้ว
+SENTENSE,EMCONFRONT_END_CWIN,1
+แก๊งของคุณชนะการดวล!
+SENTENSE,EMCONFRONT_END_CLOSS,1
+แก๊งของคุณแพ้การดวล!
+SENTENSE,EMCONFRONT_END_CTIME,1
+หมดเวลา! การดวลกิลด์สิ้นสุดแล้ว
+SENTENSE,EMCONFRONT_END_TIME,1
+หมดเวลา! การดวลกับ '%s' สิ้นสุดแล้ว
+SENTENSE,EMCONFRONT_END_MOVEMAP,1
+การดวลถูกยกเลิก
+SENTENSE,EMCONFRONT_END_DISWIN,1
+การดวลกับ '%s' สิ้นสุดเนื่องจากข้อจำกัดพื้นที่
+SENTENSE,EMCONFRONT_END_DISLOSS,1
+แพ้การดวลกับ '%s' เนื่องจากข้อจำกัดพื้นที่
+SENTENSE,EMCONFRONT_END_PARTY,1
+การดวลกับ '%s' ถูกยกเลิกเนื่องจากเข้าร่วมปาร์ตี้
+SENTENSE,EMCONFRONT_FAIL,1
+ไม่สามารถท้าดวลได้เนื่องจาก 'ข้อผิดพลาดทั่วไป'
+SENTENSE,EMCONFRONT_REFUSE,1
+คู่ต่อสู้ปฏิเสธการท้าดวลของคุณ
+SENTENSE,EMCONFRONT_REFUSE_AUTO,1
+'%s' ปฏิเสธการท้าดวลโดยอัตโนมัติ
+SENTENSE,EMCONFRONT_OPTION,1
+ข้อมูลการเลือกดวลผิดพลาด!
+SENTENSE,EMCONFRONT_PEACE,1
+ไม่สามารถดวลในโซนปลอดภัยได้
+SENTENSE,EMCONFRONT_MAX,1
+ไม่สามารถดวลกับคู่ต่อสู้เดิมภายใน %d วินาที หากคุณดวลกับเขาไปแล้ว %d ครั้ง
+SENTENSE,EMCONFRONT_ELAP,1
+ดวลกับคู่ต่อสู้เดิมได้อีกครั้งหลังจาก %d วินาที
+SENTENSE,EMCONFRONT_ALREADY_ME,1
+คุณอยู่ในโหมดดวลอยู่แล้ว
+SENTENSE,EMCONFRONT_ALREADY_TAR,1
+ผู้ที่คุณท้าดวลอยู่ในโหมดดวลอยู่
+SENTENSE,EMCONFRONT_PARTY,1
+ไม่สามารถดวลกับคนในปาร์ตี้เดียวกันได้
+SENTENSE,CONFT_START,1
+การดวลกับ '%s' เริ่มแล้ว!
+SENTENSE,CONFTPTY_START,1
+การดวลปาร์ตี้กับปาร์ตี้ '%s' เริ่มแล้ว!
+SENTENSE,CONFTPTY_START_NOT,1
+คุณไม่สามารถเข้าร่วมการดวลปาร์ตี้ได้
+SENTENSE,EMCONFRONT_MENOTPARTY,1
+คุณเข้าร่วมการดวลปาร์ตี้ได้หลังเข้าปาร์ตี้แล้ว
+SENTENSE,EMCONFRONT_MENOTMASTER,1
+เฉพาะหัวหน้าปาร์ตี้เท่านั้นที่ท้าดวลปาร์ตี้ได้
+SENTENSE,EMCONFRONT_TARMASTER,1
+ท้าดวลได้เฉพาะหัวหน้าปาร์ตี้เท่านั้น
+SENTENSE,CONFRONT_RECOVE,1
+จำนวนยาฟื้นฟูที่ใช้ในการดวลคือ %d
+SENTENSE,CONFTCLB_START,1
+การดวลกับแก๊ง '%s' เริ่มแล้ว!
+SENTENSE,NOTARGET_SKILL,1
+ไม่มีเป้าหมาย ไม่สามารถใช้สกิลได้
+SENTENSE,SKILL_DELAYTIME,1
+สกิลกำลังคูลดาวน์
+SENTENSE,SKILL_NOTITEM,1
+ต้องมีไอเทมบางอย่างเพื่อใช้สกิล
+SENTENSE,SKILL_NOTITEM_1,1
+ต้องมี (%s) เพื่อใช้สกิล
+SENTENSE,SKILL_NOTITEM_2,1
+ต้องมี (%s, %s) เพื่อใช้สกิล
+SENTENSE,SKILL_NOTITEM_ARROW,1
+ต้องมีลูกศรเพื่อใช้สกิล
+SENTENSE,SKILL_NOTITEM_CHARM,1
+ต้องมีเครื่องรางเพื่อใช้สกิล
+SENTENSE,SKILL_NOTHP,1
+HP ไม่เพียงพอที่จะใช้สกิล
+SENTENSE,SKILL_NOTMP,1
+MP ไม่เพียงพอที่จะใช้สกิล
+SENTENSE,SKILL_NOTEXP,1
+ประสบการณ์ไม่เพียงพอที่จะใช้สกิล
+SENTENSE,SKILL_DOFAIL,1
+สกิลล้มเหลว!
+SENTENSE,EMREGEN_GATE_FAIL,1
+บันทึกจุดคืนชีพล้มเหลว!
+SENTENSE,EMREGEN_GATE_SUCCEED,1
+บันทึกจุดคืนชีพสำเร็จ
+SENTENSE,EMREGEN_CURE_FAIL,1
+คำขอฮีลล้มเหลว!
+SENTENSE,EMREQ_DRUG_PK_LEVEL,1
+ค่า PK ต่ำเกินไป ไม่สามารถใช้ยาฟื้นฟูได้
+SENTENSE,EMREGEN_CHARRESET_SUCCEED,1
+คุณใช้ "ยารีเซ็ต" แล้ว
+SENTENSE,EMREGEN_CHARRESET_FAIL,1
+ใช้ "ยารีเซ็ต" ล้มเหลว!
+SENTENSE,EMREGEN_CHARRESET_ITEM_FAIL,1
+คุณไม่มี "ยารีเซ็ต" หรือมีไม่เพียงพอ
+SENTENSE,CHAT_ERROR_NOPARTY,1
+[แจ้งเตือน]คุณยังไม่ได้เข้าปาร์ตี้ใดๆ!
+SENTENSE,CHAT_ERROR_NOPRIVATE,1
+[แจ้งเตือน]ไม่มีผู้รับข้อความ!
+SENTENSE,CHAT_ERROR_NOGUILD,1
+[แจ้งเตือน]คุณยังไม่ได้เข้ากิลด์ใดๆ!
+SENTENSE,BUYITEM_NOSPACE,1
+ช่องเก็บของไม่เพียงพอ! ไม่สามารถซื้อไอเทมได้
+SENTENSE,BUYITEM_NOMONEY,1
+เงินไม่เพียงพอ! ไม่สามารถซื้อไอเทมได้
+SENTENSE,SPLIT_ITEM,1
+กรุณากรอกจำนวนไอเทมที่ต้องการแยก
+SENTENSE,CONFLICT_QUESTION,1
+คุณต้องการดวลกับ %s หรือไม่?
+SENTENSE,CONFLICT_QUESTION_PARTY,1
+คุณต้องการดวลกับปาร์ตี้ %s หรือไม่?
+SENTENSE,CONFLICT_QUESTION_GUILD,1
+คุณต้องการดวลกับกิลด์ %s หรือไม่?
+SENTENSE,PARTY_QUESTION,1
+คุณต้องการเข้าปาร์ตี้กับ '%s' หรือไม่?
+SENTENSE,CONFLICT_ONE_QUESTION_TAR,1
+คุณต้องการดวลกับ %s หรือไม่?
+SENTENSE,CONFLICT_PARTY_QUESTION_TAR,1
+คุณต้องการดวลปาร์ตี้กับปาร์ตี้ %s หรือไม่?
+SENTENSE,CONFLICT_CLUB_QUESTION_TAR,1
+คุณต้องการดวลกิลด์กับกิลด์ %s หรือไม่?
+SENTENSE,BUY_PILE_ITEM,1
+กรุณากรอกจำนวนที่ต้องการซื้อ
+SENTENSE,REQ_GATEOUT_FB_FAIL,1
+[%d]ย้ายไม่สำเร็จ!
+SENTENSE,REQ_GATEOUT_FB_DATA_ERR,1
+[%d]ข้อมูลผิดพลาด! ย้ายไม่สำเร็จ!
+SENTENSE,REQ_GATEOUT_FB_SVR_ERR,1
+[%d]เซิร์ฟเวอร์ผิดพลาด! ย้ายไม่สำเร็จ!
+SENTENSE,MAPMOVE_MESSAGE,1
+: ย้ายไปยังพื้นที่
+SENTENSE,MODAL_ESC_MENU_CLOSE,1
+คุณต้องการออกจากเกมหรือไม่?
+SENTENSE,MODAL_ESC_SERVER_STAGE,1
+คุณต้องการไปยังเมนูเลือกเซิร์ฟเวอร์หรือไม่?
+SENTENSE,SELL_ITEM_CONFIRM,1
+คุณต้องการขาย [%s] หรือไม่?
+SENTENSE,BUY_ITEM_CONFIRM,1
+คุณต้องการซื้อ [%s] หรือไม่?
+SENTENSE,PICKUP_ITEM,1
+เก็บไอเทม '%s'
+SENTENSE,PICKUP_MONEY,1
+ได้รับเงิน '%d'
+SENTENSE,EMNPC_ITEM_TRADE_FAIL,1
+เทรดไอเทมล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป!
+SENTENSE,EMNPC_ITEM_TRADE_ITEM_FAIL,1
+เทรดไอเทมล้มเหลวเนื่องจากไม่มีไอเทมที่จะเทรด!
+SENTENSE,EMNPC_ITEM_TRADE_INSERT_FAIL,1
+เทรดไอเทมล้มเหลวเนื่องจากช่องเก็บของไม่เพียงพอ!
+SENTENSE,EMNPC_ITEM_TRADE_SUCCEED,1
+เทรดไอเทมสำเร็จ
+SENTENSE,EMQUEST_START_FB_FAIL,1
+เริ่มเควสล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป!
+SENTENSE,EMQUEST_START_FB_ALREADY,1
+เควสเริ่มไปแล้ว
+SENTENSE,EMQUEST_START_FB_DONAGAIN,1
+เควสเคยล้มเหลวมาก่อน! ไม่สามารถลองอีกได้
+SENTENSE,EMQUEST_START_FB_DONREPEAT,1
+เควสนี้ทำได้ครั้งเดียวเท่านั้น! ทำซ้ำไม่ได้
+SENTENSE,EMQUEST_START_FB_CONDITION,1
+เงื่อนไขเริ่มเควสไม่ตรง! ไม่สามารถเริ่มเควสได้
+SENTENSE,EMQUEST_START_FB_NEEDMONEY,1
+เงินของคุณไม่เพียงพอสำหรับเริ่มเควส!
+SENTENSE,EMREQ_RECALL_FB_OK,1
+คุณเรียกกลับสำเร็จ
+SENTENSE,EMREQ_RECALL_FB_FAIL,1
+เรียกกลับล้มเหลว!
+SENTENSE,EMREQ_RECALL_FB_ITEM,1
+เรียกกลับล้มเหลวเนื่องจากไอเทมผิดพลาด!
+SENTENSE,EMREQ_RECALL_FB_CONDITION,1
+ไม่สามารถเรียกกลับในสถานะปัจจุบัน!
+SENTENSE,EMREQ_RECALL_FB_NOTLASTCALL,1
+คุณไม่ได้บันทึกตำแหน่งสำหรับเรียกกลับ!
+SENTENSE,EMREQ_RECALL_FB_PK_LEVEL,1
+ค่า PK ต่ำเกินไป! ไม่สามารถใช้การ์ดเรียกกลับได้
+SENTENSE,BLOCK_PROGRAM_FOUND,2
+ระบบตรวจพบโปรแกรมที่อาจกระทบเกม!
+จบเกม
+SENTENSE,BLOCK_PROGRAM_FOUND_CONSOLE,1
+ระบบตรวจพบโปรแกรมที่อาจกระทบเกม! จบเกม เรื่องนี้จะถูกรายงานกลับระบบ และอาจใช้เป็นหลักฐานแบนบัญชี
+SENTENSE,CHAT_NOTICE,1
+
+SENTENSE,QUEST_KNOCK,1
+กำลังทำเควส '%s' อยู่!
+SENTENSE,QUEST_NOINFO,1
+ไม่สามารถอ่านข้อมูลเควส '%s' ได้!
+SENTENSE,QUEST_KNOCK_END,1
+กรุณาเปิดหน้าต่างเควส (ปุ่มลัด T) เพื่อยืนยัน
+SENTENSE,QUEST_STEP,1
+หัวข้อ '%s'
+SENTENSE,QUEST_STEP_OBJ_COMPLETE,1
+สำเร็จ '%s'
+SENTENSE,QUEST_TIMEOVER,1
+เลยเวลาจำกัดของเควส '%s' แล้ว
+SENTENSE,QUEST_NONDIE,1
+กำลังทำเควส '%s' อยู่ อย่าใช้พลังงานจนหมด
+SENTENSE,QUEST_COMPLETE,1
+คุณทำเควส '%s' สำเร็จแล้ว!
+SENTENSE,QUEST_START,2
+เควส '%s' เริ่มแล้ว!
+กรุณาเปิดหน้าต่างเควส (ปุ่มลัด T) เพื่อยืนยัน
+SENTENSE,QUEST_FAIL,1
+ทำเควส '%s' ล้มเหลว!
+SENTENSE,PICKUP_QUESTITEM,1
+ได้รับไอเทมเควส '%s'
+SENTENSE,CHAT_NORMAL_MODE,1
+โหมดแชททั่วไป
+SENTENSE,CHAT_PRIVATE_MODE,1
+โหมดแชทส่วนตัว พิมพ์: @ชื่อตัวละคร ข้อความ
+SENTENSE,CHAT_PARTY_MODE,1
+โหมดแชทปาร์ตี้ พิมพ์: #ข้อความ
+SENTENSE,CHAT_TOALL_MODE,1
+โหมดแชทตะโกน พิมพ์: $ข้อความ
+SENTENSE,CHAT_GUILD_MODE,1
+โหมดแชทกิลด์ พิมพ์: %ข้อความ
+SENTENSE,BUYITEM_MAXIMUM,1
+ซื้อ %s แล้ว ตอนนี้มี %d
+SENTENSE,QUEST_GIVEUP_CONFIRM,1
+คุณต้องการยกเลิกเควสปัจจุบันหรือไม่?
+SENTENSE,WAITSERVER_MESSAGE,1
+กรุณารอสักครู่...
+SENTENSE,INVALID_KEYBOARD_INPUT,1
+ไม่สามารถพิมพ์ข้อความขณะกดปุ่ม Ctrl หรือ Alt อยู่
+SENTENSE,FRIEND_ADD,2
+คุณต้องการเพิ่ม [%s] เข้ารายชื่อเพื่อนหรือไม่?
+
+SENTENSE,FRIEND_DEL,2
+คุณต้องการลบ [%s] ออกจากรายชื่อเพื่อนหรือไม่?
+
+SENTENSE,FRIEND_BLOCK_ADD,1
+คุณต้องการเพิ่ม [%s] เข้ารายการบล็อกหรือไม่?
+SENTENSE,FRIEND_BLOCK_DEL,1
+คุณต้องการลบ [%s] ออกจากรายการบล็อกหรือไม่?
+SENTENSE,FRIEND_MOVE,1
+คุณแน่ใจหรือไม่ว่าต้องการย้ายไปหา [%s]?
+SENTENSE,FRIEND_ADD_ALREADY,1
+[%s] อยู่ในรายชื่อเพื่อนของคุณแล้ว
+SENTENSE,FRIEND_ADD_FAIL,1
+เพิ่ม [%s] เข้ารายชื่อเพื่อนล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป!
+SENTENSE,FRIEND_ADD_OK,1
+เพิ่ม [%s] เข้ารายชื่อเพื่อนสำเร็จ
+SENTENSE,FRIEND_ADD_REFUSE,1
+[%s] ปฏิเสธการถูกเพิ่มเข้ารายชื่อเพื่อน
+SENTENSE,EMFRIENDADD_ABSENCE,1
+[%s] ไม่ได้ออนไลน์หรือไม่มีผู้เล่นนี้ ไม่สามารถส่งคำเชิญเพื่อนได้
+SENTENSE,FRIEND_DEL_FAIL,1
+ลบ [%s] ออกจากรายชื่อเพื่อนล้มเหลว!
+SENTENSE,FRIEND_DEL_OK,1
+ลบ [%s] ออกจากรายชื่อเพื่อนสำเร็จ!
+SENTENSE,ADD_FRIEND_REQ,2
+[%s] ต้องการเพิ่มคุณเข้ารายชื่อเพื่อน คุณต้องการยอมรับหรือไม่?
+
+SENTENSE,EMBUS_TAKE_TICKET,1
+คุณไม่มีตั๋วรถบัส ไม่สามารถขึ้นรถบัสได้
+SENTENSE,EMBUS_TAKE_OK,1
+คุณขึ้นรถบัสแล้ว
+SENTENSE,EMBUS_TAKE_FAIL,1
+ไม่สามารถขึ้นรถบัสได้เนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMBUS_TAKE_CONDITION,1
+ไม่สามารถขึ้นรถบัสได้เนื่องจากสถานะปัจจุบันของคุณ
+SENTENSE,EMBUS_TAKE_PK_LEVEL,1
+ไม่สามารถขึ้นรถบัสได้เนื่องจากค่า PK ต่ำ
+SENTENSE,DEFAULT_POSITION,2
+คุณต้องการย้ายหน้าต่างเกมกลับตำแหน่งเริ่มต้นหรือไม่?
+
+SENTENSE,BLOCK_PROGRAM_ALARM,2
+กรุณายืนยันว่าเป็นผู้เล่นปกติหรือไม่
+ถ้าใช่ กรุณากดปุ่ม 'ยืนยัน'
+SENTENSE,UI_LOTTO,2
+>>%s เรียกลอตเตอรี่<<
+กรุณากรอกหมายเลขซีเรียลให้ถูกต้อง!
+SENTENSE,EMREQ_BOXOPEN_FB_FAIL,1
+ไม่สามารถเปิดกล่องได้เนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMREQ_BOXOPEN_FB_OK,1
+เปิดกล่องสำเร็จ
+SENTENSE,EMREQ_BOXOPEN_FB_NOITEM,1
+ไม่มีกล่องที่ระบุ
+SENTENSE,EMREQ_BOXOPEN_FB_NOBOX,1
+นี่ไม่ใช่กล่อง
+SENTENSE,EMREQ_BOXOPEN_FB_EMPTY,1
+กล่องว่างเปล่า
+SENTENSE,EMREQ_BOXOPEN_FB_NOTINVEN,1
+ช่องเก็บของไม่เพียงพอ! ไม่สามารถเก็บไอเทมจากกล่องได้
+SENTENSE,EMREQ_BOXOPEN_FB_INVALIDITEM,1
+มีไอเทมที่ไม่ถูกต้องในกล่อง
+SENTENSE,EMREQ_DISGUISE_FB_FAIL,1
+เปลี่ยนรูปผิดพลาดเนื่องจากข้อผิดพลาดทั่วไป!
+SENTENSE,EMREQ_DISGUISE_FB_OK,1
+เปลี่ยนรูปสำเร็จ
+SENTENSE,EMREQ_DISGUISE_FB_NOITEM,1
+คุณไม่มีไอเทมที่ต้องใช้เปลี่ยนรูป
+SENTENSE,EMREQ_DISGUISE_FB_NODISGUISE,1
+นี่ไม่ใช่ไอเทมสำหรับเปลี่ยนรูป
+SENTENSE,EMREQ_DISGUISE_FB_NOTSUIT,1
+เปลี่ยนรูปได้เฉพาะไอเทมเสื้อผ้าเท่านั้น
+SENTENSE,EMREQ_DISGUISE_FB_DEFSUIT,1
+ไม่สามารถเปลี่ยนรูปได้เพราะคนละประเภทเสื้อผ้า
+SENTENSE,EMREQ_CLEANSER_FB_FAIL,1
+ซักล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMREQ_CLEANSER_FB_OK,1
+ซักสำเร็จ!
+SENTENSE,EMREQ_CLEANSER_FB_NOITEM,1
+ไม่มีไอเทมสำหรับซัก
+SENTENSE,EMREQ_CLEANSER_FB_NOCLEANSER,1
+ไม่สามารถซักได้เพราะไม่ใช่เครื่องซัก
+SENTENSE,EMREQ_CLEANSER_FB_NONEED,1
+ไม่จำเป็นต้องซัก
+SENTENSE,LOTTERY_FB_NO1_6,2
+ยินดีด้วย คุณถูกรางวัลที่ %d!
+กรุณาตรวจสอบเว็บไซต์อย่างเป็นทางการสำหรับข้อมูลเพิ่มเติม
+SENTENSE,LOTTERY_FB_ALREADY_INPUTED,1
+คุณเข้าร่วมกิจกรรมลอตเตอรี่แล้ว
+SENTENSE,LOTTERY_FB_NOT_PCROOM,2
+คุณไม่ได้ใช้ IP ร้านอินเทอร์เน็ตคาเฟ่
+เฉพาะสมาชิกร้านคาเฟ่เท่านั้นที่เข้าร่วมลอตเตอรี่ได้
+SENTENSE,LOTTERY_FB_ALREADY_USED,1
+ตั๋วลอตเตอรี่ถูกใช้แล้ว
+SENTENSE,LOTTERY_FB_ERROR,1
+ประมวลผลตั๋วลอตเตอรี่ผิดพลาด!
+SENTENSE,INVEN_DEL_ITEM_TIMELMT,1
+ไอเทม '%s' หมดอายุและหายไปแล้ว!
+SENTENSE,EMREQ_CHARCARD_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะใช้การ์ดตัวละคร จึงถูกยกเลิก
+SENTENSE,EMREQ_CHARCARD_FB_OK,1
+คุณใช้การ์ดตัวละครแล้ว จำนวนตัวละครใหม่ที่สร้างได้เพิ่มขึ้น
+SENTENSE,EMREQ_CHARCARD_FB_NOITEM,1
+ไม่มีการ์ดตัวละคร
+SENTENSE,EMREQ_STORAGECARD_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะใช้การ์ดตู้เก็บของ จึงถูกยกเลิก
+SENTENSE,EMREQ_STORAGECARD_FB_OK,1
+ใช้การ์ดตู้เก็บของแล้ว วันหมดอายุถูกขยายออกไป
+SENTENSE,STORAGE_EX_STATE,2
+ตามเวลาเซิร์ฟเวอร์ ตู้เก็บของ '%d' หมดอายุปี '%d' เดือน '%d' เวลา '%d'
+ตามเวลาเซิร์ฟเวอร์ปัจจุบัน เหลืออีก '%d' วัน
+SENTENSE,EMREQ_STORAGECARD_FB_NOITEM,1
+ไม่มีการ์ดตู้เก็บของ
+SENTENSE,EMREQ_STORAGECARD_FB_INVNUM,1
+หมายเลขซีเรียลการ์ดตู้เก็บของไม่ตรงกับตู้
+SENTENSE,STORAGE_SPAN_END,1
+ไม่สามารถเก็บไอเทมได้เพราะถึงขีดจำกัดตู้เก็บของ
+SENTENSE,EMREQ_PREMIUMSET_FB_FAIL,1
+ไม่สามารถตั้งเป็นบริการพรีเมียมได้เนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMREQ_PREMIUMSET_FB_OK,1
+ตั้งเป็นบริการพรีเมียมแล้ว
+SENTENSE,EMREQ_PREMIUMSET_FB_NOITEM,1
+ไม่มีไอเทมกล่องของขวัญระดับสูง
+SENTENSE,EMREQ_PREMIUMSET_FB_NOTINVEN,1
+ไม่สามารถเก็บไอเทมจากกล่องของขวัญระดับสูงได้เพราะช่องเก็บของไม่พอ
+SENTENSE,PREMIUMSET_EX_STATE,2
+ตามเวลาเซิร์ฟเวอร์ บริการพรีเมียมหมดอายุปี '%d' เดือน '%d' เวลา '%d'
+ตามเวลาเซิร์ฟเวอร์ปัจจุบัน เหลืออีก '%d' วัน
+SENTENSE,PREMIUMSERVICE_END,1
+บริการพรีเมียมหมดอายุแล้ว
+SENTENSE,EMCHAT_LOUDSPEAKER_FAIL,1
+ใช้ลำโพงล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป!
+SENTENSE,EMCHAT_LOUDSPEAKER_OK,1
+ใช้ลำโพงแล้ว
+SENTENSE,EMCHAT_LOUDSPEAKER_NOITEM,1
+คุณไม่มีลำโพง
+SENTENSE,EMCHAT_LOUDSPEAKER_BLOCK,1
+คุณไม่มีสิทธิ์ใช้ลำโพง
+SENTENSE,EMREQ_FIRECRACKER_FB_FAIL,1
+ใช้ประทัดล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMREQ_FIRECRACKER_FB_OK,1
+ใช้ประทัดแล้ว
+SENTENSE,EMREQ_FIRECRACKER_FB_NOITEM,1
+คุณไม่มีไอเทมประทัด
+SENTENSE,EMREQ_INVENLINE_FB_FAIL,1
+เพิ่มแถวช่องเก็บของล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMREQ_INVENLINE_FB_OK,1
+เพิ่มแถวช่องเก็บของสำเร็จ!
+SENTENSE,EMREQ_INVENLINE_FB_NOITEM,1
+คุณไม่มีไอเทมที่ใช้เพิ่มแถวช่องเก็บของ
+SENTENSE,EMREQ_INVENLINE_FB_MAXLINE,1
+ช่องเก็บของถึงขีดจำกัดสูงสุดแล้ว
+SENTENSE,EMREQ_STORAGEOPEN_FB_FAIL,1
+ไม่สามารถใช้การ์ดเปิดตู้เก็บของได้เนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMREQ_STORAGEOPEN_FB_OK,1
+ใช้การ์ดเปิดตู้เก็บของแล้ว
+SENTENSE,EMREQ_STORAGEOPEN_FB_NOITEM,1
+คุณไม่มีการ์ดเปิดตู้เก็บของ
+SENTENSE,STORAGE_CHARGE_CARD_CONFIRM,1
+คุณต้องการเติมค่าให้ตู้เก็บของ [%d] หรือไม่?
+SENTENSE,EMCHARGED_ITEM_GET_FB_FAIL,1
+รับไอเทมล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMCHARGED_ITEM_GET_FB_OK,1
+รับไอเทมสำเร็จ
+SENTENSE,EMCHARGED_ITEM_GET_FB_NOITEM,1
+ไม่มีไอเทมนี้
+SENTENSE,EMCHARGED_ITEM_GET_FB_NOINVEN,1
+ช่องเก็บของไม่เพียงพอสำหรับไอเทม
+SENTENSE,EMREQ_STORAGE_END,1
+ตู้เก็บของ %d หมดอายุแล้ว
+SENTENSE,EMREQ_RESET_SKST_FB_FAIL,1
+รีเซ็ตสเตตัสและสกิลล้มเหลว
+SENTENSE,EMREQ_RESET_SKST_FB_OK,2
+รีเซ็ตสเตตัสและสกิลแล้ว!
+คุณได้รับลูกแก้วเวท %d ลูก
+SENTENSE,EMREQ_RESET_SKST_FB_NOITEM,1
+คุณไม่มีไอเทมที่ต้องใช้รีเซ็ต
+SENTENSE,EMREQ_RESET_SKST_FB_NOINVEN,2
+ช่องเก็บของไม่เพียงพอ! ไม่สามารถใส่ไอเทมที่รีเซ็ตกลับมาได้
+กรุณาเผื่อช่องสำหรับลูกแก้วเวท %d ลูก
+SENTENSE,EMQUEST_COMPLETE_FB_FAIL,1
+ไม่สามารถทำเควส '%s' ให้สำเร็จได้เนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMQUEST_COMPLETE_FB_OK,1
+เควส '%s' สำเร็จแล้ว!
+SENTENSE,EMQUEST_COMPLETE_FB_NOINVEN,1
+ไม่สามารถทำเควส '%s' ให้สำเร็จได้เพราะช่องเก็บของไม่พอ
+SENTENSE,EMQUEST_COMPLETE_FB_NOINVEN_EX,2
+ไม่สามารถทำเควส '%s' ให้สำเร็จได้เพราะช่องเก็บของไม่พอ
+กรุณาตรวจสอบช่องเก็บของ แล้วกด 'สำเร็จ' ในหน้าต่างเควส
+SENTENSE,NO_TRADE_PRIVATE_MARKET_OPEN,1
+ไม่สามารถขอเทรดได้ขณะเปิดร้านค้าส่วนตัว
+SENTENSE,PRIVATE_MARKET_SELL_ITEMCOST,1
+กรุณากรอกราคาขายของไอเทม
+SENTENSE,PRIVATE_MARKET_MAKE_OPEN_MESSAGE,1
+กรุณากรอกข้อมูลร้านค้าส่วนตัว
+SENTENSE,EMPMARKET_REGITEM_FB_FAIL,1
+ลงทะเบียนเมนูขายไอเทมล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMPMARKET_REGITEM_FB_OK,1
+ลงทะเบียนเมนูขายไอเทมเรียบร้อย
+SENTENSE,EMPMARKET_REGITEM_FB_MAXNUM,1
+เกินจำนวนการลงทะเบียนเมนูขายไอเทม
+SENTENSE,EMPMARKET_REGITEM_FB_REGITEM,1
+ไอเทมถูกลงทะเบียนในเมนูขายแล้ว
+SENTENSE,EMPMARKET_REGITEM_FB_NOSALE,1
+ไอเทมนี้ไม่อนุญาตให้เทรด
+SENTENSE,EMPMARKET_OPEN_FB_FAIL,1
+เปิดร้านค้าส่วนตัวล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMPMARKET_OPEN_FB_OK,1
+เปิดร้านค้าส่วนตัวแล้ว
+SENTENSE,EMPMARKET_OPEN_FB_ALREADY,1
+เปิดร้านค้าส่วนตัวเรียบร้อยแล้ว
+SENTENSE,EMPMARKET_OPEN_FB_EMPTY,1
+คุณยังไม่ได้ลงทะเบียนไอเทมที่จะขายในร้านค้าส่วนตัว
+SENTENSE,EMPMARKET_BUY_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไป
+SENTENSE,EMPMARKET_BUY_FB_OK,1
+คุณซื้อไอเทมจากร้านค้าส่วนตัวแล้ว
+SENTENSE,EMPMARKET_BUY_FB_OK_SELLER,1
+ขาย '%s' แล้ว รวม '%d'
+SENTENSE,EMPMARKET_BUY_FB_NUM,1
+ของสำหรับขายไม่เพียงพอ
+SENTENSE,EMPMARKET_BUY_FB_LOWMONEY,1
+เงินไม่เพียงพอ
+SENTENSE,EMPMARKET_BUY_FB_SOLD,1
+ไอเทมถูกขายแล้ว
+SENTENSE,EMPMARKET_BUY_FB_NOINVEN,1
+ช่องเก็บของไม่เพียงพอสำหรับไอเทมที่ซื้อ
+SENTENSE,PRIVATE_MARKET_SELL_WINDOW_TEXTBOX,1
+กรุณาระบุข้อมูลการเทรดไอเทม
+SENTENSE,EMCLUB_NEW_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะสร้างกิลด์
+SENTENSE,EMCLUB_NEW_FB_OK,1
+สร้างกิลด์ '%s' แล้ว
+SENTENSE,EMCLUB_NEW_FB_ALREADY,1
+คุณเป็นสมาชิกของกิลด์อื่น! ไม่สามารถสร้างกิลด์ได้
+SENTENSE,EMCLUB_NEW_FB_NOTMASTER,1
+เฉพาะหัวหน้าปาร์ตี้เท่านั้นที่สร้างกิลด์ได้
+SENTENSE,EMCLUB_NEW_FB_NOTMEMBER,1
+การสร้างกิลด์ต้องมีสมาชิกเข้าร่วม %d คนขึ้นไป
+SENTENSE,EMCLUB_NEW_FB_NOTEXIST_MEM,1
+สมาชิกที่จะเข้าร่วมกิลด์ที่กำลังสร้างไม่อยู่บริเวณนี้
+SENTENSE,EMCLUB_NEW_FB_MEM_ALREADY,1
+สมาชิกเข้ากิลด์อื่นแล้ว
+SENTENSE,EMCLUB_NEW_FB_MASTER_LVL,1
+เลเวลหัวหน้ากิลด์ไม่เพียงพอ (ต้องการ %d ขึ้นไป)
+SENTENSE,EMCLUB_NEW_FB_AVER_LIVING,1
+แต้มชีวิตของหัวหน้ากิลด์ต้อง %d ขึ้นไป
+SENTENSE,EMCLUB_NEW_FB_NOTMONEY,1
+เงินไม่พอสร้างกิลด์ (ต้องการ: %d)
+SENTENSE,EMCLUB_NEW_FB_NAME,1
+ชื่อกิลด์ '%s' ถูกใช้แล้ว
+SENTENSE,EMCLUB_NEW_FB_BADNAME,1
+ไม่สามารถใช้ชื่อ '%s' เป็นกิลด์ได้
+SENTENSE,EMCLUB_MEMBER_REQ_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะเชิญ '%s' เข้ากิลด์
+SENTENSE,EMCLUB_MEMBER_REQ_FB_OK,1
+'%s' เข้าร่วมกิลด์แล้ว
+SENTENSE,EMCLUB_MEMBER_REQ_FB_REFUSE,1
+'%s' ปฏิเสธคำเชิญเข้ากิลด์
+SENTENSE,EMCLUB_MEMBER_REQ_FB_ALREADY,1
+'%s' เข้ากิลด์แล้ว
+SENTENSE,EMCLUB_MEMBER_REQ_FB_MAXNUM,1
+จำนวนสมาชิกกิลด์ถึงสูงสุด ไม่สามารถรับสมาชิกใหม่ได้
+SENTENSE,EMCLUB_MEMBER_REQ_FB_SECEDED,1
+สมาชิกที่ออกจากกิลด์เอง สามารถเข้ากิลด์ใหม่ได้หลัง %d วัน
+SENTENSE,PRIVATE_MARKET_QUIT,1
+คุณแน่ใจหรือไม่ว่าต้องการปิด?
+SENTENSE,EMCLUB_RANK_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะขออัปเกรดเลเวลกิลด์
+SENTENSE,EMCLUB_RANK_FB_OK,1
+อัปเกรดเลเวลกิลด์แล้ว!
+SENTENSE,EMCLUB_RANK_FB_MAX,1
+เลเวลกิลด์ถึงสูงสุดแล้ว!
+SENTENSE,EMCLUB_RANK_FB_MASTER_LVL,1
+เลเวลหัวหน้ากิลด์ต่ำเกินไป (ต้องการ %d ขึ้นไป)
+SENTENSE,EMCLUB_RANK_FB_AVER_LIVING,1
+แต้มชีวิตหัวหน้ากิลด์ต่ำเกินไป (ต้องการ %d ขึ้นไป)
+SENTENSE,EMCLUB_RANK_FB_NOTMONEY,1
+เงินไม่พออัปเกรดเลเวลกิลด์ (ต้องการ: %d)
+SENTENSE,EMCLUB_MEMBER_NICK_FB_FAIL,1
+เปลี่ยนฉายาสมาชิกกิลด์ล้มเหลว!
+SENTENSE,EMCLUB_MEMBER_NICK_FB_OK,1
+เปลี่ยนฉายาสมาชิกกิลด์แล้ว
+SENTENSE,EMCLUB_MEMBER_NICK_FB_BADNAME,1
+ไม่สามารถใช้ชื่อนี้เป็นฉายาสมาชิกกิลด์ได้
+SENTENSE,CLUB_MAKE_OPEN_MESSAGE,1
+กรุณากรอกชื่อกิลด์
+SENTENSE,CLUB_LOADMARK_FAIL,3
+อ่านไฟล์ไอคอนกิลด์ล้มเหลว!
+กรุณาตรวจสอบไฟล์ %s ในโฟลเดอร์ 'My Document'
+ไฟล์ไอคอนต้องขนาด 16x11, รูปแบบ bmp, tga เท่านั้น
+SENTENSE,CLUB_KICK_MEMBER,1
+คุณต้องการไล่ '%s' ออกหรือไม่?
+SENTENSE,CLUB_BREAKUP,1
+คุณต้องการยุบกิลด์หรือไม่?
+SENTENSE,CLUB_BREAKUP_CANCEL,1
+คุณต้องการยกเลิกการยุบกิลด์หรือไม่?
+SENTENSE,CLUB_CHANGE_MARK,1
+กรุณากรอกชื่อไฟล์ไอคอนกิลด์
+SENTENSE,CLUB_CHANGE_NICK,1
+กรุณากรอกฉายา
+SENTENSE,CLUB_JOIN_ASK,1
+คุณต้องการเข้ากิลด์ '%s' หรือไม่? (หัวหน้า: '%s')
+SENTENSE,CLUB_JOIN,1
+คุณต้องการอนุญาตให้ '%s' เข้ากิลด์หรือไม่?
+SENTENSE,EMCLUB_DIS_FB_FAIL,1
+การยุบ(ยกเลิก)กิลด์ถูกยกเลิกเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMCLUB_DIS_FB_OK,1
+กำหนดการยุบกิลด์แล้ว (ยุบหลัง %d วัน)
+SENTENSE,EMCLUB_DIS_FB_CANCEL,1
+ยกเลิกการยุบกิลด์แล้ว
+SENTENSE,EMCLUB_MEMBER_DEL_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะไล่สมาชิกกิลด์ออก
+SENTENSE,EMCLUB_MEMBER_DEL_FB_OK,1
+ไล่สมาชิกกิลด์ออกแล้ว
+SENTENSE,CLUB_SELFQUIT,1
+คุณต้องการออกจากกิลด์หรือไม่?
+SENTENSE,EMCLUB_MEMBER_SECEDE_FB_FAIL,1
+ออกจากกิลด์ล้มเหลว
+SENTENSE,EMCLUB_MEMBER_SECEDE_FB_OK,2
+คุณออกจากกิลด์แล้ว!
+คุณสร้างกิลด์ของตัวเองได้ แต่เข้ากิลด์อื่นได้หลัง %d วัน
+SENTENSE,EMINVEN_RANDOMBOXOPEN_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะเปิดกล่องของขวัญ
+SENTENSE,EMINVEN_RANDOMBOXOPEN_FB_OK,1
+เปิดกล่องของขวัญแล้ว
+SENTENSE,EMINVEN_RANDOMBOXOPEN_FB_EMPTY,1
+กล่องของขวัญว่างเปล่า
+SENTENSE,EMINVEN_RANDOMBOXOPEN_FB_BADITEM,1
+ไม่มีไอเทมในกล่องของขวัญ
+SENTENSE,EMINVEN_RANDOMBOXOPEN_FB_NOINVEN,1
+ช่องเก็บของไม่พอ ไม่สามารถเก็บไอเทมจากกล่องของขวัญได้
+SENTENSE,EMINVEN_RANDOMBOXOPEN_FB_MISS,1
+กล่องของขวัญแสดง "ขอบคุณ"!
+SENTENSE,EMINVEN_DISJUNCTION_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะแยกเซ็ตอุปกรณ์
+SENTENSE,EMINVEN_DISJUNCTION_FB_OK,1
+แยกเซ็ตอุปกรณ์สำเร็จ!
+SENTENSE,EMINVEN_DISJUNCTION_FB_BADITEM,1
+ไอเทมนี้ไม่สามารถแยกเซ็ตอุปกรณ์ได้
+SENTENSE,EMINVEN_DISJUNCTION_FB_NOINVEN,1
+ช่องเก็บของไม่เพียงพอ
+SENTENSE,EMINVEN_DISJUNCTION_FB_NONEED,1
+ไอเทมนี้ไม่ต้องแยกเซ็ตอุปกรณ์
+SENTENSE,PK_PLAYHOSTILE_ADD,1
+ตัวละคร %s เริ่มการกระทำแบบ hostile
+SENTENSE,EMINVEN_HAIR_CHANGE_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะเปลี่ยนทรงผม
+SENTENSE,EMINVEN_HAIR_CHANGE_FB_OK,1
+เปลี่ยนทรงผมสำเร็จ!
+SENTENSE,EMINVEN_HAIR_CHANGE_FB_NOITEM,1
+คุณไม่มีไอเทมเปลี่ยนทรงผม
+SENTENSE,EMINVEN_HAIR_CHANGE_FB_BADITEM,1
+ไอเทมนี้เปลี่ยนทรงผมไม่ได้
+SENTENSE,EMINVEN_HAIR_CHANGE_FB_BADCLASS,1
+ไม่สามารถเปลี่ยนทรงผมได้เพราะคนละประเภทตัวละคร
+SENTENSE,EMINVEN_FACE_CHANGE_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะเปลี่ยนใบหน้า
+SENTENSE,EMINVEN_FACE_CHANGE_FB_OK,1
+เปลี่ยนใบหน้าสำเร็จ!
+SENTENSE,EMINVEN_FACE_CHANGE_FB_NOITEM,1
+คุณไม่มีไอเทมเปลี่ยนใบหน้า
+SENTENSE,EMINVEN_FACE_CHANGE_FB_BADITEM,1
+ไอเทมนี้เปลี่ยนใบหน้าไม่ได้
+SENTENSE,EMINVEN_FACE_CHANGE_FB_BADCLASS,1
+ไม่สามารถเปลี่ยนใบหน้าได้เพราะคนละประเภทตัวละคร
+SENTENSE,SKILL_LEVEL_UP_CONFIRM,1
+คุณต้องการอัปเลเวลสกิล '%s' หรือไม่?
+SENTENSE,CLUB_BATTLE_START,1
+การต่อสู้ชี้ขาดของกิลด์ '%s' เริ่มแล้ว
+SENTENSE,CLUB_BATTLE_MIN_START,1
+การต่อสู้ชี้ขาดของกิลด์ '%s' จะเริ่มในอีก '%d' นาที
+SENTENSE,CLUB_BATTLE_END,1
+การต่อสู้ชี้ขาดของกิลด์ '%s' จบแล้ว... '%s' ได้เป็นผู้นำ
+SENTENSE,EMCDCERTIFY_FAIL,1
+เกิดข้อผิดพลาดขณะตรวจสอบ CD
+SENTENSE,EMCDCERTIFY_OK,1
+เริ่มตรวจสอบ CD กรุณารอจนกว่าจะเสร็จ
+SENTENSE,EMCDCERTIFY_BADNPC,1
+ไม่มีอุปกรณ์ที่ต้องใช้ตรวจสอบ
+SENTENSE,EMCDCERTIFY_NOTMASTER,1
+เฉพาะหัวหน้าเท่านั้นที่ตรวจสอบได้
+SENTENSE,EMCDCERTIFY_AREADYCERTIFY,1
+กำลังตรวจสอบอยู่
+SENTENSE,EMCDCERTIFY_OTHERCERTIFING,1
+ขณะนี้มีกิลด์อื่นกำลังตรวจสอบอยู่
+SENTENSE,EMCDCERTIFY_AREADYGUID,1
+ขณะนี้กิลด์ผู้นำเป็นกิลด์อื่น
+SENTENSE,EMCDCERTIFY_NOTTIME,1
+ขณะนี้ไม่สามารถตรวจสอบได้
+SENTENSE,EMCDCERTIFY_DISTANCE,1
+ไม่สามารถตรวจสอบได้เพราะอยู่ไกลจากอุปกรณ์เกินไป
+SENTENSE,EMCDCERTIFY_NOTITEM,1
+ไม่มี CD ที่ตรวจสอบได้
+SENTENSE,EMCDCERTIFY_NOTCONDITION,1
+คุณยังไม่ตรงตามเงื่อนไขการตรวจสอบ
+SENTENSE,EMCDCERTIFY_AREADY,1
+ตรวจสอบไปแล้วก่อนหน้านี้
+SENTENSE,EMCDCERTIFY_ING_TIMEOUT,1
+ยกเลิกการตรวจสอบเพราะเกินเวลาจำกัด
+SENTENSE,EMCDCERTIFY_ING_DISTANCE,1
+คุณห่างจากอุปกรณ์ การตรวจสอบจะถูกยกเลิก
+SENTENSE,EMCDCERTIFY_ING_DIE,1
+การตรวจสอบล้มเหลว
+SENTENSE,EMCDCERTIFY_COMPLETE,1
+ตรวจสอบเสร็จสมบูรณ์
+SENTENSE,EMGUIDCOMMISSION_FB_FAIL,1
+เกิดข้อผิดพลาดขณะเปลี่ยนอัตราภาษี
+SENTENSE,EMGUIDCOMMISSION_FB_OK,1
+คุณตั้งเวลาเปลี่ยนอัตราภาษีแล้ว อัตราหลังเปลี่ยนคือ %2.2f%%
+SENTENSE,EMGUIDCOMMISSION_FB_RANGE,1
+เกินช่วงที่ปรับอัตราภาษีได้
+SENTENSE,EMGUIDCOMMISSION_FB_NOTCLUB,1
+คุณไม่ใช่หัวหน้ากิลด์ผู้นำ
+SENTENSE,EMGUIDCOMMISSION_FB_BATTLE,1
+ไม่สามารถเปลี่ยนอัตราภาษีระหว่างการต่อสู้ชี้ขาดของกิลด์ผู้นำ
+SENTENSE,EMGUIDCOMMISSION_FB_ALREADY,1
+คุณตั้งเวลาเปลี่ยนอัตราภาษีแล้ว
+SENTENSE,EMCHAR_GATEOUT_HOLD,1
+คุณไม่สามารถเข้าพื้นที่นี้ได้
+SENTENSE,MODAL_COMMISSION,1
+กรุณากรอกอัตราภาษีหลังเปลี่ยน
+SENTENSE,ONLY_CLUB_MASTER_USE_CLUBSTORAGE,1
+เฉพาะหัวหน้ากิลด์เท่านั้นที่ใช้ได้
+SENTENSE,CLUB_BATTLE_LAND,1
+นี่คือโซน PK อิสระ
+SENTENSE,LAND_TRADE_COMMISSION,1
+อัตราภาษีปัจจุบันของพื้นที่นี้คือ %2.2f%%
+SENTENSE,LAND_TRADE_NEW_COMMISSION,1
+อัตราภาษีปัจจุบันของพื้นที่นี้คือ %2.2f%%
+SENTENSE,LAND_TRADE_NEW_RV_COMMISSION,1
+อัตราภาษีของพื้นที่นี้จะเป็น %2.2f%% หลัง 10 นาที
+SENTENSE,EMREQ_REVIVE_FB_FAIL,1
+ใช้ลูกคืนชีพล้มเหลวเนื่องจากข้อผิดพลาด
+SENTENSE,EMREQ_REVIVE_FB_OK,1
+ใช้ลูกคืนชีพแล้ว
+SENTENSE,EMREQ_REVIVE_FB_NOITEM,1
+ไม่มีลูกคืนชีพ
+SENTENSE,EMREQ_REVIVE_FB_NOTUSE,1
+ไม่สามารถใช้ลูกคืนชีพในพื้นที่นี้
+SENTENSE,EM2FRIEND_FB_FAIL,1
+ย้ายไปหาเพื่อนถูกยกเลิกเนื่องจากข้อผิดพลาด
+SENTENSE,EM2FRIEND_FB_OK,1
+ย้ายไปหาเพื่อนแล้ว
+SENTENSE,EM2FRIEND_FB_NO_ITEM,1
+ไม่มีการ์ดเชื่อมต่อเพื่อน
+SENTENSE,EM2FRIEND_FB_FRIEND_CONDITION,1
+ไม่สามารถย้ายไปหาเพื่อนได้เพราะสถานะเพื่อนผิดปกติ
+SENTENSE,EM2FRIEND_FB_MAP_CONDITION,1
+คุณไม่มีสิทธิ์เข้าพื้นที่ที่เพื่อนอยู่
+SENTENSE,EM2FRIEND_FB_MY_CONDITION,1
+ไม่สามารถย้ายได้ในขณะนี้
+SENTENSE,EM2FRIEND_FB_PK_CONDITION,1
+ไม่สามารถย้ายได้เพราะอัตราดี/ชั่วต่ำเกินไป
+SENTENSE,EMPARTY_LURE_OTHERSCHOOL,1
+ไม่อนุญาตให้เข้าปาร์ตี้กับนักเรียนต่างโรงเรียน
+SENTENSE,EMCLUB_NEW_FB_OTHERSCHOOL,1
+ไม่อนุญาตให้สร้างกิลด์กับนักเรียนต่างโรงเรียน
+SENTENSE,EMGRINDING_TERMINATE,1
+การแปลงล้มเหลวระหว่างดำเนินการ
+SENTENSE,OTHER_SCHOOL_FREEPK_ON,1
+ช่วงเวลา PK ระหว่างโรงเรียนเริ่มแล้ว คุณโจมตีได้เฉพาะนักเรียนนอกวิทยาเขต
+SENTENSE,OTHER_SCHOOL_FREEPK_OFF,1
+ช่วงเวลา PK ระหว่างโรงเรียนเพิ่งจบลง
+SENTENSE,EM2FRIEND_FB_FRIEND_CHANNEL,1
+ไม่สามารถย้ายได้เพราะคุณกับเพื่อนอยู่คนละช่อง
+SENTENSE,EMGM_MOVE2CHAR_FB_FAIL,1
+ย้ายล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMGM_MOVE2CHAR_FB_OK,1
+ย้ายสำเร็จ
+SENTENSE,EMGM_MOVE2CHAR_FB_TO_CONDITION,1
+ย้ายล้มเหลวเพราะสถานะเป้าหมายผิดปกติ
+SENTENSE,EMGM_MOVE2CHAR_FB_MY_CONDITION,1
+ย้ายล้มเหลวเพราะสถานะของคุณผิดปกติ
+SENTENSE,EMGM_MOVE2CHAR_FB_CHANNEL,1
+ไม่สามารถย้ายได้เพราะอยู่คนละช่องกับเป้าหมาย เป้าหมายอยู่ช่อง '%d'
+SENTENSE,EMFRIENDBLOCK_FAIL,1
+บล็อกข้อความส่วนตัวจาก '%s' ล้มเหลว
+SENTENSE,EMFRIENDBLOCK_ON,1
+คุณบล็อก '%s' จากการส่งข้อความหาคุณแล้ว
+SENTENSE,EMFRIENDBLOCK_OFF,1
+คุณเพิ่งปลดบล็อก '%s'
+SENTENSE,FRIEND_BLOCK_DEL_INCORRECT,1
+กรุณากดปุ่ม 'ยกเลิก' หลังเลือกแล้ว
+SENTENSE,FRIEND_DEL_INCORRECT,1
+กรุณากดปุ่ม 'ลบ' หลังเลือกแล้ว
+SENTENSE,FRIEND_BLOCK_ADD_ALREADY,1
+เพิ่ม '%s' ในรายการบล็อกแล้ว
+SENTENSE,EMCLUB_NOTICE_FB_FAIL,1
+เกิดข้อผิดพลาดขณะเปลี่ยนประกาศกิลด์
+SENTENSE,EMCLUB_NOTICE_FB_OK,1
+เปลี่ยนประกาศแก๊งสำเร็จ [%s]
+SENTENSE,EMCLUB_NOTICE_FB_NOTMATER,1
+คุณไม่มีสิทธิ์เปลี่ยนประกาศแก๊ง
+SENTENSE,CLUB_NOTICE,1
+ประกาศแก๊ง %s : %s
+SENTENSE,ANNOUNCE_MAKE_MESSAGE,1
+กรุณากรอกประกาศแก๊ง
+SENTENSE,EMCLUBSUBMASTER_FB_FAIL,1
+เกิดข้อผิดพลาดขณะแต่งตั้งรองหัวหน้าแก๊ง
+SENTENSE,EMCLUBSUBMASTER_FB_OK,1
+แต่งตั้งรองหัวหน้าแก๊งสำเร็จ
+SENTENSE,EMCLUBSUBMASTER_FB_NOTMASTER,1
+เฉพาะหัวหน้าแก๊งเท่านั้นที่แต่งตั้งรองหัวหน้าได้
+SENTENSE,EMCLUBSUBMASTER_FB_RESET,1
+คุณยกเลิกอำนาจรองหัวหน้าแล้ว
+SENTENSE,EMCLUB_MEMBER_REQ_FB_OTHERSCHOOL,1
+ไม่สามารถเข้าแก๊งของ '%s' ได้ เพราะเขาเป็นคนละโรงเรียน
+SENTENSE,EMREQ_DISGUISE_FB_ALREADY,1
+คุณรวมกับอุปกรณ์อื่นแล้ว กรุณาใช้ 'ยาแยก' เพื่อแยกออก
+SENTENSE,CLUB_BATTLE_CERTIFY_START,1
+'%s' กำลังเริ่มตรวจสอบกับ '%s'
+SENTENSE,EMCLUBSUBMASTER_FB_BATTLE,1
+ไม่สามารถแต่งตั้งรองหัวหน้ากิลด์ก่อนการต่อสู้กิลด์
+SENTENSE,CHAT_PAPERING_MODE,1
+คุณถูกห้ามแชท 30 วินาทีเพราะส่งข้อความถี่เกินไป
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_FAIL,1
+ขอจัดตั้งพันธมิตรแก๊งล้มเหลวเนื่องจากข้อผิดพลาดทั่วไป
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_OK,1
+จัดตั้งพันธมิตรแก๊งแล้ว
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_NOTMASTER,1
+เฉพาะหัวหน้าแก๊งเท่านั้นที่จัดตั้งพันธมิตรได้
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_NOTCHIEF,1
+เฉพาะหัวหน้าพันธมิตรเท่านั้นที่เชิญแก๊งเข้าพันธมิตรได้
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_TARNOTMASTER,1
+เป้าหมายไม่ใช่หัวหน้าแก๊ง
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_ALREADY,1
+แก๊งของเป้าหมายเข้าพันธมิตรอื่นแล้ว
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_MAX,1
+เกินจำนวนแก๊งสูงสุดในพันธมิตรแล้ว
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_REFUSE,1
+ปฏิเสธคำเชิญเข้าพันธมิตร
+SENTENSE,EMCLUB_ALLIANCE_DEL_FB_FAIL,1
+เกิดข้อผิดพลาดขณะขอลบแก๊งออกจากพันธมิตร
+SENTENSE,EMCLUB_ALLIANCE_DEL_FB_OK,1
+ลบออกจากพันธมิตรแล้ว
+SENTENSE,EMCLUB_ALLIANCE_DEL_FB_NOTMASTER,1
+ไม่ใช่หัวหน้าแก๊ง
+SENTENSE,EMCLUB_ALLIANCE_DEL_FB_NOTCHIEF,1
+ไม่ใช่หัวหน้าพันธมิตร
+SENTENSE,EMCLUB_ALLIANCE_SEC_FB_FAIL,1
+เกิดข้อผิดพลาดทั่วไปขณะขอถอนตัวจากพันธมิตร
+SENTENSE,EMCLUB_ALLIANCE_SEC_FB_OK,1
+ถอนตัวจากพันธมิตรแล้ว
+SENTENSE,EMCLUB_ALLIANCE_SEC_FB_NOTMASTER,1
+ไม่ใช่หัวหน้าแก๊ง
+SENTENSE,EMCLUB_ALLIANCE_SEC_FB_ALLIANCE,1
+ไม่ได้เข้าพันธมิตรใดๆ
+SENTENSE,EMCLUB_ALLIANCE_DIS_FB_FAIL,1
+เกิดข้อผิดพลาดขณะยุบพันธมิตรแก๊ง
+SENTENSE,EMCLUB_ALLIANCE_DIS_FB_OK,1
+ยุบพันธมิตรแก๊งแล้ว
+SENTENSE,EMCLUB_ALLIANCE_DIS_FB_NOTMASTER,1
+ไม่ใช่หัวหน้าแก๊ง
+SENTENSE,EMCLUB_ALLIANCE_DIS_FB_NOTCHIEF,1
+ไม่ใช่หัวหน้าพันธมิตร
+SENTENSE,UNION_JOIN_ASK,1
+เข้าร่วมพันธมิตร (หัวหน้า: %s)?
+SENTENSE,UNION_JOIN,1
+คุณต้องการเพิ่ม '%s' เข้าพันธมิตรหรือไม่?
+SENTENSE,ALLIANCE_ADD,1
+แก๊ง '%s' เข้าร่วมพันธมิตร '%s' แล้ว
+SENTENSE,ALLIANCE_DEL,1
+แก๊ง '%s' ถอนตัวจากพันธมิตรแล้ว
+SENTENSE,ALLIANCE_DIS,1
+พันธมิตร '%s' ถูกยุบ
+SENTENSE,UNION_LEAVE,1
+คุณต้องการถอนตัวจากพันธมิตรหรือไม่?
+SENTENSE,UNION_KICK_MEMBER,1
+คุณต้องการไล่แก๊ง '%s' ออกหรือไม่?
+SENTENSE,UNION_BREAKUP,1
+คุณต้องการยุบพันธมิตรหรือไม่?
+SENTENSE,CHAT_ALLIANCE_MODE,1
+ช่องพันธมิตร พิมพ์โดยตรง: !ข้อความ
+SENTENSE,EMCHAR_GATEOUT_CONDITION,1
+[%d] ไม่มีสิทธิ์ย้าย
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_DISTIME,1
+ไม่สามารถจัดตั้งพันธมิตรได้จนกว่าจะถึง '%s'
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_SECTIME,1
+หลังถูกไล่ออกจากพันธมิตร คุณจะถูกห้ามเข้าพันธมิตรอื่นเป็นเวลา '%s'
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_TOSECTIME,1
+หลังถอนตัวจากพันธมิตร คุณจะถูกห้ามเข้าพันธมิตรอื่นเป็นเวลา '%s'
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_OTHERSCHOOL,1
+ไม่สามารถจัดตั้งพันธมิตรกับแก๊งต่างโรงเรียนได้
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_BOTHGUID,1
+คุณไม่สามารถเป็นพันธมิตรกับกิลด์ผู้นำอื่นได้
+SENTENSE,EMCDCERTIFY_HAVEGUIDCLUB,1
+คุณไม่สามารถรับรองได้มากกว่าหนึ่งแห่ง
+SENTENSE,EMCLUB_ALLIANCE_REQ_FB_GUIDMAP,1
+ไม่สามารถจัดตั้งพันธมิตรในแมพนี้ได้
+SENTENSE,EMCLUB_ALLIANCE_DEL_FB_GUIDMAP,1
+ไม่สามารถลบพันธมิตรในแมพนี้ได้
+SENTENSE,EMCLUB_ALLIANCE_SEC_FB_GUIDMAP,1
+ไม่สามารถถอนตัวจากพันธมิตรในแมพนี้ได้
+SENTENSE,EMCLUB_ALLIANCE_DIS_FB_GUIDMAP,1
+ไม่สามารถยุบพันธมิตรในแมพนี้ได้
+SENTENSE,HAIRCOLORCARD_TITLE,1
+กรุณาเลือกสี
+SENTENSE,INVEN_CHAR_RENAME,1
+กรุณากรอกชื่อ
+WORD,HAIRSTYLECARD_NAME_M,8
+A,B,C,D,E,F,G,H
+WORD,HAIRSTYLECARD_NAME_FM,7
+I,J,K,L,M,N,O

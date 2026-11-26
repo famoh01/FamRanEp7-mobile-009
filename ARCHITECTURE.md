@@ -16,7 +16,7 @@
 | สถาปัตยกรรมเดิม (PC) | **Monolithic Win32 / MFC / DirectX 9** — client/server แยกเป็น project ใน solution เดียว แชร์ protocol ผ่าน `netclientLib/s_NetGlobal.h` |
 | งาน mobile เดิม | `RANMobile/` 4,434 LOC C++17 + Android NDK/GLES3, CI เขียว (APK build ได้จริง) — มี renderer/UI/data/login scaffold แต่ **ยังเล่นเกมจริงไม่ได้** (ไม่มี mesh/map render, protocol เคยผิดและถูกแก้ใน PR #2, input ยังไม่ผูก gameplay) |
 | แหล่งซอร์สเพิ่มเติมที่ตรวจ | Release `ran-ep7-full-v1` (metadata เห็น 4 assets), repo สำรอง `matheomedrana/Ran-Online-EP7-Complete-Files` (เข้าถึงได้, 8.1 MB), Google Drive folder (เห็นรายการไฟล์ผ่าน PR #2 docs แต่ไฟล์ใหญ่เกินเพดาน download / บาง host อยู่นอก allowlist) |
-| Blocker สำคัญ | ไม่มี Android SDK/NDK ใน sandbox นี้ (build local ไม่ได้, ใช้ CI ได้); ไม่มี live EP7 server+MSSQL; ไม่มี asset เกมจริงใน Git; release asset host ใหญ่อยู่นอก allowlist; `RanLogic*` ไม่มีใน upstream repo — ดู `BLOCKERS.md` |
+| Blocker สำคัญ (หลัง Phase 2) | B1-B4 ถูก resolve แบบ policy/scope ตามคำตัดสินผู้ใช้ (2026-11-25); B6 ThaiPack นำเข้าแล้ว, **B6a ServerDBTools ยังดาวน์โหลดไม่ได้**; B5 keystore deferred; B7 asset-dependent tests ยัง workaround — ดู `BLOCKERS.md` |
 
 ---
 
@@ -26,11 +26,11 @@
 
 | แหล่ง | วิธีตรวจ | ผล |
 |---|---|---|
-| `famoh01/FamRanEp7-mobile-009` (repo งานปัจจุบัน) | `git log/branch`, `gh pr list/view`, `git fetch` PR branches, อ่านไฟล์จาก PR #2 | repo ว่างที่ HEAD; มี PR #1-#3 (draft) พร้อมงานเดิมจำนวนมาก |
+| `famoh01/FamRanEp7-mobile-009` (repo งานปัจจุบัน) | `git log/branch`, `gh pr list/view`, `git fetch` PR branches, อ่านไฟล์จาก PR #2 | baseline PR #2 ถูก import เข้ามาใน branch ปัจจุบันแล้ว (commit `c765f53`, source `f506d954`); มี PR #1-#3 (draft) เป็น reference |
 | `famoh01/ran-online-ep7` (repo หลัก upstream) | `gh pr list --repo`, `gh api` branch `arena/6c988b52-ran-online-ep7`, อ้างอิง ARCHITECTURE/PROGRESS_REVIEW ที่ตรวจจาก upstream ใน PR #2 | PR #1,#2 merged; branch `arena/6c988b52-ran-online-ep7` มีอยู่ (sha `5c29d1d`). Upstream มี RANMobile merge แล้ว |
 | Release `ran-ep7-full-v1` (`famoh01/ran-online-ep7`) | `gh release view` | เห็น 4 assets: `RAN-EP7-Client-TH.zip.part00` (1.57 GB), `part01` (1.01 GB), `RAN-EP7-ServerDBTools.zip` (49.8 MB), `RAN-EP7-ThaiPack-FamHawaii.zip` (1.36 MB) |
 | `matheomedrana/Ran-Online-EP7-Complete-Files` (repo สำรอง) | `gh repo view`, `gh api git/trees/main?recursive=1` | repo สาธารณะ 8.1 MB, มีทั้ง compiled server/tools binaries (`ServerAgent.exe`, `ServerField.exe`, `ServerLogin.exe`, `ServerSession.exe`, editors) และ source tree ใต้ `(Source Code) Ran Online Server Files and Developer Tools/` รวม DX includes; เหมาะเป็นแหล่งอ้างอิงสำรอง ไม่ใช่ source-of-truth แทน upstream |
-| Google Drive folder `1Y3VOeAeBzSbaB_o9oWLN16qD29b8Ro1m` | อ้างอิงจาก PR #2 BLOCKERS + ข้อจำกัด sandbox | ไฟล์เล็กบางไฟล์เคยระบุว่าดึงได้ แต่ไฟล์ client ใหญ่ (.00/.01) เกินเพดาน; ใน sandbox นี้ไม่สามารถดาวน์โหลดจาก `drive.google.com` โดยตรงผ่าน bash ได้ (นอก allowlist สำหรับไฟล์ binary ขนาดใหญ่ตามข้อจำกัดที่รายงานไว้เดิม) — **ต้องยืนยันกับผู้ใช้ก่อนดึง** |
+| Google Drive folder `1Y3VOeAeBzSbaB_o9oWLN16qD29b8Ro1m` | `google_drive.list_files` + `download_file` | เข้าถึงได้; **นำเข้าแล้ว** `RAN-EP7-ThaiPack-FamHawaii.zip` (1.36MB, file id `1IL8jlmvl5PGGHdaf5nlnoZdBMhTu25Ag`) → เก็บที่ `RANMobile/Data/External/RAN-EP7-ThaiPack-FamHawaii.zip` และแตกที่ `RANMobile/Data/External/ThaiPack/` (1046 files). ServerDBTools 49.8MB ดาวน์โหลดผ่าน connector ไม่สำเร็จ (B6a) |
 
 ### 1.2 แหล่งที่เข้าถึงไม่ได้ / เข้าถึงแบบจำกัด
 
@@ -233,7 +233,15 @@ famoh01/ran-online-ep7 (upstream)
 
 ---
 
-## 8. หลักฐานคำสั่งที่ใช้สำรวจ (reproducible)
+
+## 8. ไฟล์เสริมที่นำเข้า (Phase 2 / B6)
+
+| ไฟล์ | ตำแหน่งใน repo | แหล่ง | ใช้ตรงจุดไหน | สถานะ |
+|---|---|---|---|---|
+| `RAN-EP7-ThaiPack-FamHawaii.zip` (1.36MB) | `RANMobile/Data/External/RAN-EP7-ThaiPack-FamHawaii.zip` + แตกที่ `RANMobile/Data/External/ThaiPack/` | Google Drive file `1IL8jlmvl5PGGHdaf5nlnoZdBMhTu25Ag` (fallback จาก Release เพราะ `release-assets.githubusercontent.com` ถูกบล็อก) | อ้างอิง Thai text/npctalk/gui text (`data/gui/gameword_th.txt`, `gameintext_th.txt`, `gameextext_th.txt`, `data/glogic/npctalk/*.ntk`) สำหรับงาน Thai font/rendering/text pipeline ที่ค้าง; **ไม่ใช่ font binary** ใน zip นี้ | นำเข้าแล้ว |
+| `RAN-EP7-ServerDBTools.zip` (49.8MB) | *(ยังไม่นำเข้า)* | Release `ran-ep7-full-v1` / Drive `1YZdc1OqAe8rpEfBZ6j_kb9YarLZSZtrO` | แผน: ใช้เป็น **schema/reference เท่านั้น** สำหรับ Phase 4 protocol/auth DB compatibility (ห้ามรัน/ติดตั้งเครื่องมือ) | **BLOCKED (B6a)** — ดาวน์โหลดไม่ได้ใน sandbox |
+
+## 9. หลักฐานคำสั่งที่ใช้สำรวจ (reproducible)
 
 ```bash
 # Repo ปัจจุบัน
